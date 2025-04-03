@@ -7,7 +7,140 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<style>body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;padding:20px;background-color:#ffffff}.header{text-align:center;margin-bottom:30px}.price-card{background-color:#fff;border-radius:10px;padding:20px;box-shadow:0 4px 8px rgba(0,0,0,.1);text-align:center;transition:transform .3s,box-shadow .3s}.price-card:hover{transform:translateY(-5px);box-shadow:0 6px 12px rgba(0,0,0,.15)}.price-value{font-size:28px;font-weight:700;color:#28a745}.metal-name{font-size:20px;font-weight:600;margin-bottom:10px;color:#343a40}.chart-container{background-color:#fff;border-radius:10px;padding:20px;box-shadow:0 4px 8px rgba(0,0,0,.1);margin-top:30px;overflow-x:auto;display:flex;justify-content:center}canvas{max-width:100%;height:500px!important}.footer{text-align:center;margin-top:40px;color:#6c757d;font-size:14px}.form-label{font-weight:600;color:#495057}#calculatedPrice{font-size:24px;font-weight:700;color:#007bff;text-align:center;margin-top:20px}@media (max-width:768px){.price-card{margin-bottom:20px}.chart-container{margin-top:20px;padding:10px}canvas{height:500px!important}h2{font-size:1.5rem}}#loadingScreen{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(255,255,255,.9);display:flex;justify-content:center;align-items:center;z-index:9999;font-size:1.5rem;color:#007bff;font-weight:700}#errorMessage{color:red;font-size:1rem;text-align:center;margin-top:20px}</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+<style>body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;padding:20px;background-color:#ffffff}.header{text-align:center;margin-bottom:30px}.price-card{background-color:#fff;border-radius:10px;padding:20px;box-shadow:0 4px 8px rgba(0,0,0,.1);text-align:center;transition:transform .3s,box-shadow .3s}.price-card:hover{transform:translateY(-5px);box-shadow:0 6px 12px rgba(0,0,0,.15)}.price-value{font-size:28px;font-weight:700;color:#28a745}.metal-name{font-size:20px;font-weight:600;margin-bottom:10px;color:#343a40}.chart-container{background-color:#fff;border-radius:10px;padding:20px;box-shadow:0 4px 8px rgba(0,0,0,.1);margin-top:30px;overflow-x:auto;display:flex;justify-content:center}canvas{max-width:100%;height:500px!important}.footer{text-align:center;margin-top:40px;color:#6c757d;font-size:14px}.form-label{font-weight:600;color:#495057}#calculatedPrice{font-size:24px;font-weight:700;color:#007bff;text-align:left;margin-top:20px}@media (max-width:768px){.price-card{margin-bottom:20px}.chart-container{margin-top:20px;padding:10px}canvas{height:500px!important}h2{font-size:1.5rem}}#loadingScreen{position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(255,255,255,.9);display:flex;justify-content:center;align-items:center;z-index:9999;font-size:1.5rem;color:#007bff;font-weight:700}#errorMessage{color:red;font-size:1rem;text-align:center;margin-top:20px}
+
+/* New styles for form */
+.form-section {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.action-button {
+    flex: 1;
+    padding: 10px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buy-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.sell-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.invest-button {
+    background-color: #ffc107;
+    color: black;
+}
+
+.action-button:hover {
+    opacity: 0.9;
+}
+
+.image-preview {
+    width: 100%;
+    max-height: 200px;
+    margin-top: 10px;
+    border-radius: 5px;
+    display: none;
+    object-fit: contain;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: none;
+}
+
+/* Add these styles to your existing CSS */
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+input.is-invalid ~ .invalid-feedback,
+select.is-invalid ~ .invalid-feedback,
+textarea.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+/* Modal animations */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+.modal-content {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #28a745;
+    color: white;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.modal-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+.modal-body p {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+</style>
 </head>
 <body>
 <div id="loadingScreen">Loading...</div>
@@ -21,22 +154,403 @@
 <div class="col-md-3 mb-3"><div class="price-card"><div class="metal-name">Platinum</div><div class="price-value">$<%= metalPrices.Platinum ? metalPrices.Platinum.toFixed(2) : '0.00' %></div></div></div>
 <div class="col-md-3 mb-3"><div class="price-card"><div class="metal-name">Palladium</div><div class="price-value">$<%= metalPrices.Palladium ? metalPrices.Palladium.toFixed(2) : '0.00' %></div></div></div>
 </div>
-<h2 class="mb-4">Calculate Price</h2>
-<div class="row mb-4">
-<div class="col-md-6"><label for="metalSelect" class="form-label">Select Metal</label><select id="metalSelect" class="form-select"><option value="Gold">Gold</option><option value="Silver">Silver</option><option value="Platinum">Platinum</option><option value="Palladium">Palladium</option></select></div>
-<div class="col-md-6"><label for="gramInput" class="form-label">Enter Weight (grams)</label><input type="number" id="gramInput" min="0" class="form-control" placeholder="Enter grams"></div>
+
+<!-- New combined form section -->
+<div class="form-section">
+    <h2 class="mb-4">Metal Transaction Request</h2>
+    
+    <div id="formErrors" class="alert alert-danger" style="display: none;"></div>
+    <div id="successMessage" class="success-message">Your submission has been saved successfully!</div>
+    
+    <form id="metalForm" action="/submit-form" method="POST" enctype="multipart/form-data">
+        <!-- Customer info section -->
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="name" class="form-label">Your Name *</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+                <div class="invalid-feedback" id="nameError"></div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email Address *</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+                <div class="invalid-feedback" id="emailError"></div>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="sku" class="form-label">Product ID/SKU (Optional)</label>
+                <input type="text" id="sku" name="sku" class="form-control">
+                <div class="invalid-feedback" id="skuError"></div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="image" class="form-label">Upload Image (Optional)</label>
+                <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                <div class="invalid-feedback" id="imageError"></div>
+                <img id="imagePreview" class="image-preview" src="#" alt="Image preview">
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <label for="description" class="form-label">Notes/Description (Optional)</label>
+            <textarea id="description" name="description" class="form-control" rows="3" placeholder="Any additional details about your request..."></textarea>
+            <div class="invalid-feedback" id="descriptionError"></div>
+        </div>
+        
+        <!-- Price calculator section -->
+        <h4 class="mb-3">Calculate Price</h4>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="metalSelect" class="form-label">Select Metal</label>
+                <select id="metalSelect" name="metal" class="form-select">
+                    <option value="Gold">Gold</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Platinum">Platinum</option>
+                    <option value="Palladium">Palladium</option>
+                </select>
+                <div class="invalid-feedback" id="metalError"></div>
+            </div>
+            <div class="col-md-6">
+                <label for="gramInput" class="form-label">Enter Weight (grams)</label>
+                <input type="number" id="gramInput" name="grams" min="0" class="form-control" placeholder="Enter grams" required>
+                <div class="invalid-feedback" id="gramsError"></div>
+                <div id="calculatedPrice" class="mb-4">Price: $0.00</div>
+            </div>
+        </div>
+        
+        <input type="hidden" id="calculatedPriceHidden" name="calculatedPrice" value="$0.00">
+        <input type="hidden" id="action" name="action" value="">
+        
+        <!-- Order buttons -->
+        <div class="action-buttons">
+            <button type="button" id="buyButton" class="action-button buy-button" data-action="buy">Buy</button>
+            <button type="button" id="sellButton" class="action-button sell-button" data-action="sell">Sell</button>
+            <button type="button" class="action-button invest-button" data-action="invest">Invest</button>
+        </div>
+    </form>
 </div>
-<div id="calculatedPrice">Price: $0.00</div>
+
+<!-- Historical charts section -->
 <h2 class="mb-4">Historical Price Charts</h2>
 <div class="row">
-<div class="col-md-6 mb-4"><div class="chart-container"><canvas id="goldChart"></canvas></div></div>
-<div class="col-md-6 mb-4"><div class="chart-container"><canvas id="silverChart"></canvas></div></div>
-<div class="col-md-6 mb-4"><div class="chart-container"><canvas id="platinumChart"></canvas></div></div>
-<div class="col-md-6 mb-4"><div class="chart-container"><canvas id="palladiumChart"></canvas></div></div>
+    <div class="col-md-6 mb-4"><div class="chart-container"><canvas id="goldChart"></canvas></div></div>
+    <div class="col-md-6 mb-4"><div class="chart-container"><canvas id="silverChart"></canvas></div></div>
+    <div class="col-md-6 mb-4"><div class="chart-container"><canvas id="platinumChart"></canvas></div></div>
+    <div class="col-md-6 mb-4"><div class="chart-container"><canvas id="palladiumChart"></canvas></div></div>
 </div>
-<div class="footer"><hr><p>Powered by Gilbert System 📊</p></div>
 </div>
+
+<!-- Add thank you modal -->
+<div class="modal fade" id="thankYouModal" tabindex="-1" aria-labelledby="thankYouModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="thankYouModalLabel">Request Received!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+          <div class="mt-3">
+            <h4>Thank You For Your Request</h4>
+          </div>
+        </div>
+        <p>Your request has been submitted successfully!</p>
+        <p>Our team will review your details and contact you shortly at the email address you provided.</p>
+        <p><strong>Reference Number:</strong> <span id="referenceNumber"></span></p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-success px-4 me-2" data-bs-dismiss="modal">Ok</button>
+        <button type="button" class="btn btn-primary px-4" id="newOrderBtn">Claim a new request</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script>function createGradient(e,t){const n=e.createLinearGradient(0,0,0,400);return n.addColorStop(0,t+"80"),n.addColorStop(1,t+"00"),n}function configureChart(e,t,n,a,o){const r=createGradient(e,o);return new Chart(e,{type:"line",data:{labels:t.dates,datasets:[{label:n,data:t.prices,borderColor:a,backgroundColor:r,borderWidth:2,tension:.4,fill:!0,pointRadius:3,pointBackgroundColor:a}]},options:{responsive:!0,maintainAspectRatio:!1,plugins:{legend:{position:"top",labels:{font:{size:14}}},tooltip:{callbacks:{label:function(e){return`Price: $${e.raw.toFixed(2)}`}}},title:{display:!0,text:`${n} - Last Month`,font:{size:16}}},scales:{y:{beginAtZero:!1,ticks:{callback:function(e){return`$${e}`}}}}}})}const loadingScreen=document.getElementById("loadingScreen"),mainContent=document.getElementById("mainContent"),errorMessage=document.getElementById("errorMessage");function showError(e){errorMessage.textContent=e,errorMessage.style.display="block"}function hideLoadingScreen(){loadingScreen.style.display="none",mainContent.style.display="block"}try{const goldCtx=document.getElementById("goldChart").getContext("2d");configureChart(goldCtx,<%- JSON.stringify(goldData) %>,"Gold Price (USD/oz)","#FFD700","#FFD700");const silverCtx=document.getElementById("silverChart").getContext("2d");configureChart(silverCtx,<%- JSON.stringify(silverData) %>,"Silver Price (USD/oz)","#C0C0C0","#C0C0C0");const platinumCtx=document.getElementById("platinumChart").getContext("2d");configureChart(platinumCtx,<%- JSON.stringify(platinumData) %>,"Platinum Price (USD/oz)","#E5E4E2","#E5E4E2");const palladiumCtx=document.getElementById("palladiumChart").getContext("2d");configureChart(palladiumCtx,<%- JSON.stringify(palladiumData) %>,"Palladium Price (USD/oz)","#8c8c8c","#8c8c8c"),hideLoadingScreen()}catch(e){console.error("Error configuring charts:",e),showError("Failed to load charts. Please try again later."),hideLoadingScreen()}const metalPrices=<%- JSON.stringify(metalPrices) %>,metalSelect=document.getElementById("metalSelect"),gramInput=document.getElementById("gramInput"),calculatedPrice=document.getElementById("calculatedPrice");function updatePrice(){try{const e=metalSelect.value,t=parseFloat(gramInput.value)||0,n=metalPrices[e]||0,a=t*n;calculatedPrice.textContent=`Price: $${a.toFixed(2)}`}catch(e){console.error("Error calculating price:",e),showError("Failed to calculate price. Please try again.")}}gramInput.addEventListener("input",updatePrice),metalSelect.addEventListener("change",updatePrice);const socket=io();socket.on("updatePrices",e=>{try{document.querySelectorAll(".price-card").forEach((t,n)=>{const a=["Gold","Silver","Platinum","Palladium"],o=a[n],r=t.querySelector(".price-value");r&&e[o]&&(r.textContent=`$${e[o].toFixed(2)}`)})}catch(e){console.error("Error updating prices:",e),showError("Failed to update prices. Please refresh the page.")}});</script>
+<script>
+// Form handling scripts
+document.addEventListener('DOMContentLoaded', function() {
+    // Global variables and utility functions
+    const loadingScreen = document.getElementById("loadingScreen");
+    const mainContent = document.getElementById("mainContent");
+    const errorMessage = document.getElementById("errorMessage");
+    const metalPrices = <%- JSON.stringify(metalPrices) %>;
+    
+    function showError(e) {
+        errorMessage.textContent = e;
+        errorMessage.style.display = "block";
+    }
+    
+    function hideLoadingScreen() {
+        loadingScreen.style.display = "none";
+        mainContent.style.display = "block";
+    }
+    
+    // Chart initialization
+    try {
+        const goldCtx = document.getElementById("goldChart").getContext("2d");
+        configureChart(goldCtx, <%- JSON.stringify(goldData) %>, "Gold Price (USD/oz)", "#FFD700", "#FFD700");
+        
+        const silverCtx = document.getElementById("silverChart").getContext("2d");
+        configureChart(silverCtx, <%- JSON.stringify(silverData) %>, "Silver Price (USD/oz)", "#C0C0C0", "#C0C0C0");
+        
+        const platinumCtx = document.getElementById("platinumChart").getContext("2d");
+        configureChart(platinumCtx, <%- JSON.stringify(platinumData) %>, "Platinum Price (USD/oz)", "#E5E4E2", "#E5E4E2");
+        
+        const palladiumCtx = document.getElementById("palladiumChart").getContext("2d");
+        configureChart(palladiumCtx, <%- JSON.stringify(palladiumData) %>, "Palladium Price (USD/oz)", "#8c8c8c", "#8c8c8c");
+        
+        hideLoadingScreen();
+    } catch (e) {
+        console.error("Error configuring charts:", e);
+        showError("Failed to load charts. Please try again later.");
+        hideLoadingScreen();
+    }
+    
+    // Chart configuration function
+    function createGradient(e, t) {
+        const n = e.createLinearGradient(0, 0, 0, 400);
+        return n.addColorStop(0, t + "80"), n.addColorStop(1, t + "00"), n;
+    }
+
+    function configureChart(e, t, n, a, o) {
+        const r = createGradient(e, o);
+        return new Chart(e, {
+            type: "line",
+            data: {
+                labels: t.dates,
+                datasets: [{
+                    label: n,
+                    data: t.prices,
+                    borderColor: a,
+                    backgroundColor: r,
+                    borderWidth: 2,
+                    tension: .4,
+                    fill: !0,
+                    pointRadius: 3,
+                    pointBackgroundColor: a
+                }]
+            },
+            options: {
+                responsive: !0,
+                maintainAspectRatio: !1,
+                plugins: {
+                    legend: {
+                        position: "top",
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(e) {
+                                return `Price: $${e.raw.toFixed(2)}`
+                            }
+                        }
+                    },
+                    title: {
+                        display: !0,
+                        text: `${n} - Last Month`,
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: !1,
+                        ticks: {
+                            callback: function(e) {
+                                return `$${e}`
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
+    // Form elements
+    const form = document.getElementById('metalForm');
+    const formErrors = document.getElementById('formErrors');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const skuInput = document.getElementById('sku');
+    const descriptionInput = document.getElementById('description');
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const gramInput = document.getElementById('gramInput');
+    const metalSelect = document.getElementById('metalSelect');
+    const calculatedPrice = document.getElementById('calculatedPrice');
+    const calculatedPriceHidden = document.getElementById('calculatedPriceHidden');
+    const actionInput = document.getElementById('action');
+    
+    // Action buttons
+    const buyButton = document.getElementById('buyButton');
+    const sellButton = document.getElementById('sellButton');
+    
+    // Thank you modal
+    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+    
+    // Image preview
+    imageInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            imagePreview.style.display = 'none';
+        }
+    });
+    
+    // Price calculator
+    function updatePrice() {
+        try {
+            const metal = metalSelect.value;
+            const grams = parseFloat(gramInput.value) || 0;
+            const pricePerGram = metalPrices[metal] || 0;
+            const totalPrice = grams * pricePerGram;
+            const priceText = `Price: $${totalPrice.toFixed(2)}`;
+            
+            calculatedPrice.textContent = priceText;
+            calculatedPriceHidden.value = priceText;
+        } catch (e) {
+            console.error("Error calculating price:", e);
+            showError("Failed to calculate price. Please try again.");
+        }
+    }
+    
+    metalSelect.addEventListener('change', updatePrice);
+    gramInput.addEventListener('input', updatePrice);
+    
+    // Form validation
+    function validateForm() {
+        let isValid = true;
+        formErrors.style.display = 'none';
+        formErrors.innerHTML = '';
+        
+        // Reset all error messages
+        document.querySelectorAll('.invalid-feedback').forEach(el => {
+            el.textContent = '';
+        });
+        
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.classList.remove('is-invalid');
+        });
+        
+        // Validate name
+        if (!nameInput.value.trim()) {
+            nameInput.classList.add('is-invalid');
+            document.getElementById('nameError').textContent = 'Please enter your name';
+            isValid = false;
+        }
+        
+        // Validate email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailInput.value.trim() || !emailPattern.test(emailInput.value)) {
+            emailInput.classList.add('is-invalid');
+            document.getElementById('emailError').textContent = 'Please enter a valid email address';
+            isValid = false;
+        }
+        
+        // Validate grams
+        if (!gramInput.value || parseFloat(gramInput.value) <= 0) {
+            gramInput.classList.add('is-invalid');
+            document.getElementById('gramsError').textContent = 'Please enter a valid weight';
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    // Handle form submission
+    function handleSubmit(action) {
+        if (!validateForm()) {
+            return;
+        }
+        
+        actionInput.value = action;
+        
+        // Use fetch API for AJAX submission
+        const formData = new FormData(form);
+        
+        fetch('/submit-form', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Generate and display reference number
+                const refNumber = data.id || `REF-${Date.now().toString().slice(-6)}`;
+                document.getElementById('referenceNumber').textContent = refNumber;
+                
+                // Show thank you modal
+                thankYouModal.show();
+                
+                // Reset form but don't redirect or auto-close
+                form.reset();
+                imagePreview.style.display = 'none';
+                calculatedPrice.textContent = 'Price: $0.00';
+                calculatedPriceHidden.value = '$0.00';
+                
+                // No timeout for auto-closing the modal
+            } else {
+                // Show error
+                formErrors.style.display = 'block';
+                formErrors.textContent = data.message || 'An error occurred. Please try again.';
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+            formErrors.style.display = 'block';
+            formErrors.textContent = 'Network error. Please check your connection and try again.';
+        });
+    }
+    
+    // Action button event listeners
+    buyButton.addEventListener('click', function() {
+        handleSubmit('buy');
+    });
+    
+    sellButton.addEventListener('click', function() {
+        handleSubmit('sell');
+    });
+    
+    // Add New Order button handler - just resets the form and closes modal
+    document.getElementById('newOrderBtn').addEventListener('click', function() {
+        thankYouModal.hide();
+        form.reset();
+        imagePreview.style.display = 'none';
+        calculatedPrice.textContent = 'Price: $0.00';
+        calculatedPriceHidden.value = '$0.00';
+    });
+    
+    // The existing socket code
+    const socket = io();
+    socket.on("updatePrices", e => {
+        try {
+            document.querySelectorAll(".price-card").forEach((t, n) => {
+                const a = ["Gold", "Silver", "Platinum", "Palladium"],
+                    o = a[n],
+                    r = t.querySelector(".price-value");
+                r && e[o] && (r.textContent = `$${e[o].toFixed(2)}`)
+            });
+            
+            // Update price calculation if we have new prices
+            updatePrice();
+        } catch (e) {
+            console.error("Error updating prices:", e);
+            showError("Failed to update prices. Please refresh the page.");
+        }
+    });
+});
+</script>
 </body>
 </html>
