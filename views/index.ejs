@@ -470,19 +470,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Handle form submission
-    function handleSubmit(action) {
+    function handleSubmit(action, clickedButton) {
         if (!validateForm()) {
             return;
         }
         
         actionInput.value = action;
         
-        // Show loading state
+        // Get all buttons to disable during submission
         const formButtons = document.querySelectorAll('.action-button');
         formButtons.forEach(btn => { 
             btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
         });
+        
+        // Show loading spinner only on the clicked button
+        const originalText = clickedButton.textContent;
+        clickedButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
         
         // Use fetch API for AJAX submission
         const formData = new FormData(form);
@@ -512,12 +515,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 formErrors.textContent = data.message || 'An error occurred. Please try again.';
             }
             
-            // Re-enable buttons
+            // Re-enable all buttons
             formButtons.forEach(btn => {
                 btn.disabled = false;
-                let actionText = btn.getAttribute('data-action');
-                actionText = actionText.charAt(0).toUpperCase() + actionText.slice(1);
-                btn.textContent = actionText;
+                // Only restore original text to the clicked button
+                if (btn === clickedButton) {
+                    btn.textContent = originalText;
+                }
             });
         })
         .catch(error => {
@@ -525,23 +529,29 @@ document.addEventListener('DOMContentLoaded', function() {
             formErrors.style.display = 'block';
             formErrors.textContent = 'Network error. Please check your connection and try again.';
             
-            // Re-enable buttons
+            // Re-enable all buttons
             formButtons.forEach(btn => {
                 btn.disabled = false;
-                let actionText = btn.getAttribute('data-action');
-                actionText = actionText.charAt(0).toUpperCase() + actionText.slice(1);
-                btn.textContent = actionText;
+                // Only restore original text to the clicked button
+                if (btn === clickedButton) {
+                    btn.textContent = originalText;
+                }
             });
         });
     }
     
     // Action button event listeners
     buyButton.addEventListener('click', function() {
-        handleSubmit('buy');
+        handleSubmit('buy', this);
     });
     
     sellButton.addEventListener('click', function() {
-        handleSubmit('sell');
+        handleSubmit('sell', this);
+    });
+    
+    // Update the invest button listener too
+    document.querySelector('.invest-button').addEventListener('click', function() {
+        handleSubmit('invest', this);
     });
     
     // Add New Order button handler - just resets the form and closes modal

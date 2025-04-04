@@ -11,5 +11,18 @@
     "action": "buy",
     "imagePath": "https://res.cloudinary.com/dcvqytwuq/image/upload/v1743743903/metal_transactions/tzq5wmmafymapud7uklx.png",
     "timestamp": "2025-04-04T05:18:24.501Z"
+  },
+  {
+    "id": 1743744231295,
+    "name": "RTN Global",
+    "email": "risetonet@hotmail.com",
+    "sku": "545454",
+    "description": "Current Prices (USD per gram)\r\nGold\r\n$111.53\r\nSilver\r\n$1.13\r\nPlatinum\r\n$34.04\r\nPalladium\r\n$33.09",
+    "metal": "Gold",
+    "grams": 500,
+    "calculatedPrice": "Price: $55766.07",
+    "action": "buy",
+    "imagePath": "https://res.cloudinary.com/dcvqytwuq/image/upload/v1743744229/metal_transactions/pgtd6dyp4peq3cyiryru.png",
+    "timestamp": "2025-04-04T05:23:51.295Z"
   }
 ]
