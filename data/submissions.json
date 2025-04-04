@@ -1,67 +1,15 @@
 [
   {
-    "id": 1743710499304,
-    "name": "RTN Global",
-    "email": "muhammadtayyab2928@gmail.com",
-    "sku": "545454",
-    "description": "dded Chart Initialization:\r\nRe-added the chart configuration code\r\nMade sure the charts are loaded properly on page load\r\nThese changes should fix the JavaScript errors you're seeing. The script now properly handles all the functionality:\r\nChart display\r\nReal-time price updates\r\nForm validation\r\nImage upload preview",
-    "metal": "Platinum",
-    "grams": 4,
-    "calculatedPrice": "Price: $136.06",
-    "action": "buy",
-    "imagePath": "/uploads/1743710499296-logo.jpg",
-    "timestamp": "2025-04-03T20:01:39.304Z"
-  },
-  {
-    "id": 1743711112122,
+    "id": 1743743904501,
     "name": "RTN Global",
     "email": "muhammadtayyab2928@gmail.com",
     "sku": "",
-    "description": "",
-    "metal": "Gold",
-    "grams": 5,
-    "calculatedPrice": "Price: $558.61",
-    "action": "buy",
-    "imagePath": null,
-    "timestamp": "2025-04-03T20:11:52.122Z"
-  },
-  {
-    "id": 1743711185039,
-    "name": "Muhammad Nouman",
-    "email": "muhammadnouman72321@gmail.com",
-    "sku": "545454",
-    "description": "http://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/datahttp://localhost:8000/data",
-    "metal": "Palladium",
-    "grams": 27,
-    "calculatedPrice": "Price: $894.86",
-    "action": "buy",
-    "imagePath": "/uploads/1743711185034-logo.jpg",
-    "timestamp": "2025-04-03T20:13:05.039Z"
-  },
-  {
-    "id": 1743711547355,
-    "name": "RTN Global",
-    "email": "muhammadtayyab2928@gmail.com",
-    "sku": "",
-    "description": "http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/datahttp://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/datahttp://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/datahttp://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/datahttp://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/datahttp://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/datahttp://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data http://localhost:8000/data",
+    "description": "\r\nStorage Management: No need to manage storage on your server\r\nReliability: High-availability and backup of your images\r\nBandwidth: Reduced bandwidth costs for your application server\r\nThis implementation maintains the same ",
     "metal": "Silver",
-    "grams": 108,
-    "calculatedPrice": "Price: $122.87",
-    "action": "sell",
-    "imagePath": "/uploads/1743711547320-rtnglobal-logo.png",
-    "timestamp": "2025-04-03T20:19:07.355Z"
-  },
-  {
-    "id": 1743712551374,
-    "name": "Muhammad Tayyab",
-    "email": "muhammadtayyab2928@gmail.com",
-    "sku": "563543643",
-    "description": "Any description here",
-    "metal": "Platinum",
-    "grams": 4,
-    "calculatedPrice": "Price: $136.10",
+    "grams": 7,
+    "calculatedPrice": "Price: $7.91",
     "action": "buy",
-    "imagePath": "/uploads/1743712551364-rtnglobal-logo.png",
-    "timestamp": "2025-04-03T20:35:51.374Z"
+    "imagePath": "https://res.cloudinary.com/dcvqytwuq/image/upload/v1743743903/metal_transactions/tzq5wmmafymapud7uklx.png",
+    "timestamp": "2025-04-04T05:18:24.501Z"
   }
 ]

@@ -477,6 +477,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         actionInput.value = action;
         
+        // Show loading state
+        const formButtons = document.querySelectorAll('.action-button');
+        formButtons.forEach(btn => { 
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        });
+        
         // Use fetch API for AJAX submission
         const formData = new FormData(form);
         
@@ -499,18 +506,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 imagePreview.style.display = 'none';
                 calculatedPrice.textContent = 'Price: $0.00';
                 calculatedPriceHidden.value = '$0.00';
-                
-                // No timeout for auto-closing the modal
             } else {
                 // Show error
                 formErrors.style.display = 'block';
                 formErrors.textContent = data.message || 'An error occurred. Please try again.';
             }
+            
+            // Re-enable buttons
+            formButtons.forEach(btn => {
+                btn.disabled = false;
+                let actionText = btn.getAttribute('data-action');
+                actionText = actionText.charAt(0).toUpperCase() + actionText.slice(1);
+                btn.textContent = actionText;
+            });
         })
         .catch(error => {
             console.error('Error submitting form:', error);
             formErrors.style.display = 'block';
             formErrors.textContent = 'Network error. Please check your connection and try again.';
+            
+            // Re-enable buttons
+            formButtons.forEach(btn => {
+                btn.disabled = false;
+                let actionText = btn.getAttribute('data-action');
+                actionText = actionText.charAt(0).toUpperCase() + actionText.slice(1);
+                btn.textContent = actionText;
+            });
         });
     }
     
