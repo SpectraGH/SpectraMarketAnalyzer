@@ -9,9 +9,32 @@ const express = require("express"),
     io = new Server(server),
     PORT = process.env.PORT || 8e3;
 const multer = require('multer');
-const fs = require('fs');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const mongoose = require('mongoose');
+
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGODB_URI || 'your_mongodb_connection_string')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+// Create a schema for submissions
+const submissionSchema = new mongoose.Schema({
+    id: Number,
+    name: String,
+    email: String,
+    sku: String,
+    description: String,
+    metal: String,
+    grams: Number,
+    calculatedPrice: String,
+    action: String,
+    imagePath: String,
+    timestamp: { type: Date, default: Date.now }
+});
+
+// Create a model
+const Submission = mongoose.model('Submission', submissionSchema);
 
 // Configure Cloudinary
 cloudinary.config({
@@ -31,16 +54,6 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage: storage });
-
-// Make sure we have a place to store submissions
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-}
-const submissionsFile = path.join(dataDir, 'submissions.json');
-if (!fs.existsSync(submissionsFile)) {
-    fs.writeFileSync(submissionsFile, JSON.stringify([]));
-}
 
 server.listen(PORT, () => { console.log(`Server running on port ${PORT}`) }).on("error", err => { "EADDRINUSE" === err.code ? console.error(`Port ${PORT} is already in use. Please try a different port.`) : console.error("Error starting server:", err), process.exit(1) }), app.set("view engine", "ejs"), app.set("views", path.join(__dirname, "views")), app.use(express.static("public"));
 app.use(express.json());
@@ -68,11 +81,13 @@ app.post('/upload-image', async (req, res) => {
 });
 
 // Handle form submissions
-app.post('/submit-form', upload.single('image'), (req, res) => {
+app.post('/submit-form', upload.single('image'), async (req, res) => {
     try {
         const { name, email, sku, description, action, metal, grams, calculatedPrice } = req.body;
         const id = Date.now();
-        const submission = {
+        
+        // Create a new submission document
+        const newSubmission = new Submission({
             id: id,
             name,
             email,
@@ -82,33 +97,11 @@ app.post('/submit-form', upload.single('image'), (req, res) => {
             grams: parseFloat(grams) || 0,
             calculatedPrice,
             action: action || 'none',
-            // The path is now a Cloudinary URL instead of a local path
-            imagePath: req.file ? req.file.path : null,
-            timestamp: new Date().toISOString()
-        };
-
-        // Read existing submissions with error handling
-        let submissions = [];
-        try {
-            if (fs.existsSync(submissionsFile)) {
-                const fileContent = fs.readFileSync(submissionsFile, 'utf8');
-                if (fileContent.trim()) {
-                    submissions = JSON.parse(fileContent);
-                }
-            }
-        } catch (parseError) {
-            console.warn('Error parsing submissions file, creating new one:', parseError);
-        }
+            imagePath: req.file ? req.file.path : null
+        });
         
-        // Ensure submissions is an array
-        if (!Array.isArray(submissions)) {
-            submissions = [];
-        }
-        
-        submissions.push(submission);
-        
-        // Save updated submissions
-        fs.writeFileSync(submissionsFile, JSON.stringify(submissions, null, 2));
+        // Save to MongoDB
+        await newSubmission.save();
 
         // Return success response with ID
         res.json({ 
@@ -127,18 +120,11 @@ app.post('/submit-form', upload.single('image'), (req, res) => {
 });
 
 // Add new route for admin data display page
-app.get('/admin', (req, res) => {
+app.get('/admin', async (req, res) => {
     try {
-        let submissions = [];
-        if (fs.existsSync(submissionsFile)) {
-            const fileContent = fs.readFileSync(submissionsFile, 'utf8');
-            if (fileContent.trim()) {
-                submissions = JSON.parse(fileContent);
-            }
-        }
-        
-        // Sort submissions by timestamp (newest first)
-        submissions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        // Get submissions from MongoDB instead of file
+        const submissions = await Submission.find()
+            .sort({ timestamp: -1 }); // Sort by timestamp descending
         
         res.render('admin', { submissions });
     } catch (error) {
