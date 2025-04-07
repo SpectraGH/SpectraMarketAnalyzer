@@ -285,9 +285,9 @@ app.get('/admin/login', (req, res) => {
     res.render('admin-login', { error: null });
 });
 
-// Admin login POST endpoint
-app.post('/admin/login', (req, res) => {
-    const { username, password } = req.body;
+// Admin login POST endpoint - updated to handle JSON requests
+app.post('/admin/login', express.json(), (req, res) => {
+    const { username, password, rememberMe } = req.body;
     
     // Get credentials from environment variables or use defaults for development
     const adminUsername = process.env.ADMIN_USERNAME || 'admin';
@@ -297,13 +297,51 @@ app.post('/admin/login', (req, res) => {
         // Set authenticated session
         req.session.isAuthenticated = true;
         
+        // Store remember me preference in session
+        if (rememberMe) {
+            req.session.rememberMe = true;
+            // Set a longer session expiration if rememberMe is true
+            req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
+        }
+        
         // Redirect to originally requested URL or admin dashboard
         const redirectUrl = req.session.returnTo || '/admin/dashboard';
         delete req.session.returnTo;
         
-        res.redirect(redirectUrl);
+        // Handle both form and API requests
+        if (req.headers['content-type'] === 'application/json') {
+            res.json({ success: true, redirect: redirectUrl });
+        } else {
+            res.redirect(redirectUrl);
+        }
     } else {
-        res.render('admin-login', { error: 'Invalid username or password' });
+        // Handle both form and API requests
+        if (req.headers['content-type'] === 'application/json') {
+            res.status(401).json({ error: 'Invalid username or password' });
+        } else {
+            res.render('admin-login', { error: 'Invalid username or password' });
+        }
+    }
+});
+
+// Verify authentication token endpoint
+app.post('/admin/verify-token', express.json(), (req, res) => {
+    const { token } = req.body;
+    
+    // Check if token exists and session is authenticated
+    if (token && req.session && req.session.isAuthenticated) {
+        res.json({ valid: true });
+    } else {
+        res.json({ valid: false });
+    }
+});
+
+// Check session validity endpoint
+app.get('/admin/check-session', (req, res) => {
+    if (req.session && req.session.isAuthenticated) {
+        res.json({ valid: true });
+    } else {
+        res.json({ valid: false });
     }
 });
 
