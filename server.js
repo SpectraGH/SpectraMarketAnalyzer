@@ -40,7 +40,7 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'metal_transactions',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'webp','avif','heic','heif'],
         transformation: [{ width: 1000, height: 1000, crop: 'limit' }]
     }
 });
@@ -163,7 +163,7 @@ setInterval(emitRealTimeUpdates, 1e4);
 
 // Root route
 app.get("/", (e, t) => { 
-    t.send("Welcome to the Metal Prices API! Use /data to get the latest prices.") 
+    window.location.href = "https://www.spectragemsandminerals.com"
 });
 
 // Data route
