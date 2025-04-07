@@ -16,7 +16,7 @@ const session = require('express-session');
 require('dotenv').config();
 
 // Import models instead of defining schema in server.js
-const Submission = require('./models/submission');
+const Submission = require('./models/Submission');
 const Order = require('./models/Order');
 
 // Import routes
