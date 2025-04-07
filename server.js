@@ -163,7 +163,7 @@ setInterval(emitRealTimeUpdates, 1e4);
 
 // Root route
 app.get("/", (e, t) => { 
-    window.location.href = "https://www.spectragemsandminerals.com"
+    window.top.location.href = "https://www.spectragemsandminerals.com"
 });
 
 // Data route
