@@ -277,107 +277,118 @@ app.post('/submit-form', upload.single('image'), async (req, res) => {
 
 // Authentication middleware
 const isAuthenticated = (req, res, next) => {
-    if (req.session && req.session.isAuthenticated) {
+    // Try to get token from different sources
+    const authHeader = req.headers.authorization;
+    const headerToken = authHeader && authHeader.split(' ')[1];
+    const queryToken = req.query.token;
+    
+    // Use token from header or query param
+    const token = headerToken || queryToken;
+    
+    // If no token, redirect to login
+    if (!token) {
+        return res.redirect('/admin/login');
+    }
+    
+    // Simple check - token should start with 'authenticated_'
+    if (token.startsWith('authenticated_')) {
         return next();
     }
-    // Store the original URL for redirect after login
-    req.session.returnTo = req.originalUrl;
+    
+    // If token is invalid, redirect to login
     res.redirect('/admin/login');
 };
 
 // Admin login page
 app.get('/admin/login', (req, res) => {
-    // If already authenticated, redirect to dashboard
-    if (req.session && req.session.isAuthenticated) {
-        return res.redirect('/admin/dashboard');
-    }
     res.render('admin-login', { error: null });
 });
 
 // Admin login POST endpoint
-app.post('/admin/login', (req, res) => {
-    const isJsonRequest = req.headers['content-type'] && req.headers['content-type'].includes('application/json');
-    
-    // Get username and password from either JSON body or form data
-    let username, password, rememberMe;
-    
-    if (isJsonRequest) {
-        // For JSON requests, parse the body
-        ({ username, password, rememberMe } = req.body);
-    } else {
-        // For form submissions
-        username = req.body.username;
-        password = req.body.password;
-        rememberMe = req.body['remember-me'] === 'on';
-    }
+app.post('/admin/login', express.json(), (req, res) => {
+    const { username, password } = req.body;
     
     // Get credentials from environment variables or use defaults for development
     const adminUsername = process.env.ADMIN_USERNAME || 'admin';
     const adminPassword = process.env.ADMIN_PASSWORD || 'spectra2023';
     
     if (username === adminUsername && password === adminPassword) {
-        // Set authenticated session
-        req.session.isAuthenticated = true;
+        // Generate simple token with timestamp
+        const token = 'authenticated_' + Date.now();
         
-        // Store remember me preference in session
-        if (rememberMe) {
-            // Set a longer session expiration for "remember me"
-            req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
-        }
-        
-        // Redirect to originally requested URL or admin dashboard
-        const redirectUrl = req.session.returnTo || '/admin/dashboard';
-        delete req.session.returnTo;
-        
-        // Handle API requests
-        if (isJsonRequest) {
-            res.json({ success: true, redirect: redirectUrl });
-        } else {
-            res.redirect(redirectUrl);
-        }
+        // Return token to client
+        return res.json({ 
+            success: true, 
+            token: token,
+            redirect: '/admin/dashboard'
+        });
     } else {
-        // Handle invalid credentials
-        if (isJsonRequest) {
-            res.status(401).json({ error: 'Invalid username or password' });
-        } else {
-            res.render('admin-login', { error: 'Invalid username or password' });
-        }
+        // Invalid credentials
+        return res.status(401).json({ error: 'Invalid username or password' });
     }
 });
 
-// Verify authentication token endpoint (simplified)
+// Verify authentication token endpoint
 app.post('/admin/verify-token', express.json(), (req, res) => {
-    // Simply check if the user has a valid session
-    if (req.session && req.session.isAuthenticated) {
+    const { token } = req.body;
+    
+    // Simple verification - token should start with 'authenticated_'
+    if (token && token.startsWith('authenticated_')) {
         return res.json({ valid: true });
     }
     
-    // If no valid session, send back invalid response
+    // Invalid token
     res.json({ valid: false });
 });
 
-// Check session validity endpoint (simplified)
+// Check session validity endpoint
 app.get('/admin/check-session', (req, res) => {
-    // Simply check if the user has a valid session
-    if (req.session && req.session.isAuthenticated) {
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    // Simple verification - token should start with 'authenticated_'
+    if (token && token.startsWith('authenticated_')) {
         return res.json({ valid: true });
     }
     
-    // If no valid session, send back invalid response
+    // Invalid token
     res.json({ valid: false });
 });
 
-// Admin logout
+// Admin logout - just a redirect since we're not storing sessions
 app.get('/admin/logout', (req, res) => {
-    // Destroy session
-    req.session.destroy();
-    
-    // Redirect to login page
     res.redirect('/admin/login');
 });
 
 // Protected admin dashboard
-app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
+app.get('/admin/dashboard', (req, res, next) => {
+    // If we have a token in query string, proceed to authentication
+    if (req.query.token) {
+        return next();
+    }
+    
+    // Otherwise, render a script that will redirect with token
+    res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Redirecting...</title>
+    </head>
+    <body>
+        <p>Authenticating...</p>
+        <script>
+            const token = localStorage.getItem('spectra_admin_auth');
+            if (token) {
+                window.location.href = '/admin/dashboard?token=' + token;
+            } else {
+                window.location.href = '/admin/login';
+            }
+        </script>
+    </body>
+    </html>
+    `);
+}, isAuthenticated, async (req, res) => {
     try {
         // Get submissions from MongoDB
         const submissions = await Submission.find()

@@ -682,6 +682,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Get token from localStorage
+            const authToken = localStorage.getItem('spectra_admin_auth');
+            
+            // Redirect to login if no token found
+            if (!authToken) {
+                window.location.href = '/admin/login';
+                return;
+            }
+            
             // Handle logout
             document.getElementById('logout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -689,40 +698,36 @@
                 // Clear localStorage
                 localStorage.removeItem('spectra_admin_auth');
                 
-                // Redirect to server logout endpoint
-                window.location.href = '/admin/logout';
+                // Redirect to login page
+                window.location.href = '/admin/login';
             });
             
-            // Check for valid session
-            async function validateSession() {
+            // Check for valid token
+            async function validateToken() {
                 try {
-                    // Check if auth token exists in localStorage
-                    const hasLocalStorage = !!localStorage.getItem('spectra_admin_auth');
+                    const response = await fetch('/admin/check-session', {
+                        headers: {
+                            'Authorization': 'Bearer ' + authToken
+                        }
+                    });
                     
-                    // If no authentication data, redirect to login
-                    if (!hasLocalStorage) {
-                        window.location.href = '/admin/login';
-                        return;
-                    }
-                    
-                    const response = await fetch('/admin/check-session');
                     const data = await response.json();
                     
                     if (!data.valid) {
-                        // Session expired or invalid
+                        // Token invalid or expired
                         localStorage.removeItem('spectra_admin_auth');
                         window.location.href = '/admin/login';
                     }
                 } catch (error) {
-                    console.error('Session validation error:', error);
+                    console.error('Token validation error:', error);
                 }
             }
             
-            // Validate session on page load
-            validateSession();
+            // Validate token on page load
+            validateToken();
             
-            // Periodically validate session (every 5 minutes)
-            setInterval(validateSession, 5 * 60 * 1000);
+            // Periodically validate token (every 5 minutes)
+            setInterval(validateToken, 5 * 60 * 1000);
             
             // Initialize tooltips
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
