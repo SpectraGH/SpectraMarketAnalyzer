@@ -3,213 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metal Transactions Admin</title>
+    <title>Admin Dashboard - Spectra Metal Transactions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #0d6efd;
+            --main-bg-color: #f8f9fa;
+            --header-bg-color: #28a745;
+            --header-text-color: white;
             --success-color: #28a745;
             --danger-color: #dc3545;
             --warning-color: #ffc107;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
+            --info-color: #17a2b8;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--main-bg-color);
             padding: 0;
-            background-color: #f0f2f5;
-            min-height: 100vh;
+            margin: 0;
         }
         
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 250px;
-            background-color: var(--dark-color);
-            color: white;
-            padding-top: 20px;
-            z-index: 1000;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-        
-        .sidebar-header {
+        .header {
+            background-color: var(--header-bg-color);
+            color: var(--header-text-color);
             padding: 15px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
-        .sidebar-menu {
-            padding: 0;
-            list-style: none;
+        .logo-section {
+            display: flex;
+            align-items: center;
         }
         
-        .sidebar-menu li {
-            margin-bottom: 5px;
+        .header-logo {
+            height: 40px;
+            margin-right: 15px;
         }
         
-        .sidebar-menu a {
-            display: block;
-            padding: 10px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background-color: rgba(255,255,255,0.1);
-            color: white;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .sidebar-menu a i {
-            margin-right: 10px;
+        .header h1 {
+            font-size: 1.5rem;
+            margin: 0;
         }
         
         .main-content {
             padding: 20px;
-            transition: all 0.3s;
-        }
-        
-        .header {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
         .filter-bar {
             background-color: white;
-            border-radius: 10px;
             padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         
-        .data-table {
+        .data-card {
             background-color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            overflow: hidden;
+            padding: 20px;
             margin-bottom: 20px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
         }
         
         .table {
-            margin-bottom: 0;
+            min-width: 900px;
         }
         
-        .table thead th {
-            background-color: #f8f9fa;
+        th {
+            background-color: rgba(40, 167, 69, 0.1);
+            padding: 12px 15px;
             font-weight: 600;
-            border-top: none;
-            padding: 15px;
-            color: var(--dark-color);
+            white-space: nowrap;
         }
         
-        .table tbody tr {
-            transition: background-color 0.2s;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-        
-        .table tbody tr:hover {
-            background-color: rgba(13, 110, 253, 0.03);
-        }
-        
-        .table td {
-            padding: 15px;
+        td {
+            padding: 12px 15px;
             vertical-align: middle;
         }
         
         .badge-buy {
-            background-color: var(--success-color);
             color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: 500;
+            background-color: var(--success-color);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
         }
         
         .badge-sell {
-            background-color: var(--danger-color);
             color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: 500;
+            background-color: var(--danger-color);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
         }
         
         .badge-invest {
+            color: #000;
             background-color: var(--warning-color);
-            color: black;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-weight: 500;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
         }
         
         .badge-none {
-            background-color: #6c757d;
             color: white;
-            padding: 5px 10px;
+            background-color: #6c757d;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        
+        .detail-button {
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-weight: 500;
+            font-size: 0.8rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .detail-button:hover {
+            background-color: #dee2e6;
+            color: #212529;
+            text-decoration: none;
+        }
+        
+        .detail-button i {
+            margin-right: 3px;
         }
         
         .submission-image {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
             border-radius: 4px;
-            border: 1px solid rgba(0,0,0,0.1);
+            cursor: pointer;
             transition: transform 0.2s;
         }
         
         .submission-image:hover {
-            transform: scale(1.1);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 50px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .empty-state i {
-            font-size: 5rem;
-            color: #6c757d;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-        
-        .detail-button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 6px 12px;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .detail-button:hover {
-            background-color: #0b5ed7;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transform: scale(1.05);
         }
         
         .modal-detail-image {
-            max-width: 100%;
             max-height: 300px;
+            object-fit: contain;
             border-radius: 8px;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
@@ -222,19 +172,20 @@
         
         .modal-header {
             border-bottom: 1px solid rgba(0,0,0,0.1);
-            padding: 20px;
+            padding: 15px 20px;
             background-color: white;
         }
         
         .modal-body {
-            padding: 25px;
+            padding: 20px;
+            font-size: 0.95rem;
         }
         
         .customer-card, .transaction-card {
             background-color: #f8f9fa;
             border-radius: 8px;
-            padding: 20px;
-            height: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
         }
         
         .pagination-container {
@@ -244,8 +195,8 @@
         }
         
         .status-indicator {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             display: inline-block;
             margin-right: 5px;
@@ -266,38 +217,100 @@
         .status-indicator.none {
             background-color: #6c757d;
         }
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.show {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
-
         
-        #sidebarToggle {
-            background: none;
-            border: none;
+        .receipt-button {
+            background-color: #28a745;
             color: white;
-            font-size: 1.5rem;
+            padding: 3px 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        
+        .receipt-button:hover {
+            background-color: #218838;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .receipt-button i {
+            margin-right: 3px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            border-radius: 4px;
+        }
+        
+        .btn-logout {
+            background-color: white;
+            color: #28a745;
+            border: 1px solid white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .btn-logout:hover {
+            background-color: rgba(255,255,255,0.9);
+            color: #218838;
+        }
+        
+        .info-tooltip {
+            cursor: help;
+        }
+        
+        /* For mobile responsiveness */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .header-logo {
+                height: 30px;
+            }
+            
+            .action-col {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-section">
+            <img src="https://static.wixstatic.com/media/bb6757_4ca9a0b59e614a1b992bbf048bc8d91d~mv2.jpg" alt="Spectra Logo" class="header-logo">
+            <h1>Admin Dashboard</h1>
+        </div>
+        <div>
+            <a href="/admin/logout" class="btn-logout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+        </div>
+    </div>
+    
     <!-- Main content -->
     <div class="main-content">
-        
         <!-- Filter controls -->
         <div class="filter-bar">
             <div class="row g-3">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search transactions...">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email or ID...">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -315,264 +328,494 @@
                         <option value="Silver">Silver</option>
                         <option value="Platinum">Platinum</option>
                         <option value="Palladium">Palladium</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-outline-secondary w-100" id="resetFilters">Reset</button>
+                    <button id="resetFilters" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle"></i> Reset
+                    </button>
                 </div>
             </div>
         </div>
         
-        <% if (submissions && submissions.length > 0) { %>
-            <div class="data-table">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Date</th>
-                                <th>Customer</th>
-                                <th>Transaction</th>
-                                <th>Amount</th>
-                                <th>Price</th>
-                                <th>Image</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% submissions.forEach(function(submission) { %>
-                                <tr class="transaction-row" 
-                                    data-id="<%= submission.id %>"
-                                    data-metal="<%= submission.metal %>"
-                                    data-action="<%= submission.action %>">
-                                    <td>
-                                        <span class="badge bg-secondary">#<%= submission.id.toString().slice(-6) %></span>
-                                    </td>
-                                    <td>
-                                        <%= new Date(submission.timestamp).toLocaleDateString() %><br>
-                                        <small class="text-muted"><%= new Date(submission.timestamp).toLocaleTimeString() %></small>
-                                    </td>
-                                    <td>
-                                        <strong><%= submission.name %></strong><br>
-                                        <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;"><%= submission.email %></small>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <% if (submission.action === 'buy') { %>
-                                                <span class="status-indicator buy"></span>
-                                                <span class="badge-buy">BUY</span>
-                                            <% } else if (submission.action === 'sell') { %>
-                                                <span class="status-indicator sell"></span>
-                                                <span class="badge-sell">SELL</span>
-                                            <% } else if (submission.action === 'invest') { %>
-                                                <span class="status-indicator invest"></span>
-                                                <span class="badge-invest">INVEST</span>
-                                            <% } else { %>
-                                                <span class="status-indicator none"></span>
-                                                <span class="badge-none">OTHER</span>
-                                            <% } %>
-                                        </div>
-                                        <div class="mt-1"><%= submission.metal %></div>
-                                    </td>
-                                    <td>
-                                        <strong><%= submission.grams %></strong> g
-                                    </td>
-                                    <td>
-                                        <%= submission.calculatedPrice %>
-                                    </td>
-                                    <td>
+        <!-- Submissions table -->
+        <div class="data-card">
+            <h2 class="h5 mb-3"><i class="bi bi-table me-2"></i>Transaction Submissions</h2>
+            <div class="table-container">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Metal</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% submissions.forEach(function(submission) { %>
+                            <tr class="submission-row" data-id="<%= submission.id %>" data-action="<%= submission.action %>" data-metal="<%= submission.metal %>">
+                                <td>
+                                    <%= String(submission.id).substring(0, 8) %>...
+                                </td>
+                                <td>
+                                    <%= new Date(submission.timestamp).toLocaleDateString() %>
+                                </td>
+                                <td>
+                                    <div data-bs-toggle="tooltip" title="<%= submission.email %>">
+                                        <%= submission.name.length > 15 ? submission.name.substring(0, 15) + '...' : submission.name %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <% if (submission.action === 'buy') { %>
+                                        <span class="badge-buy">BUY</span>
+                                    <% } else if (submission.action === 'sell') { %>
+                                        <span class="badge-sell">SELL</span>
+                                    <% } else if (submission.action === 'invest') { %>
+                                        <span class="badge-invest">INVEST</span>
+                                    <% } else { %>
+                                        <span class="badge-none">OTHER</span>
+                                    <% } %>
+                                </td>
+                                <td><%= submission.metal %></td>
+                                <td><%= submission.grams %> g</td>
+                                <td>
+                                    <% 
+                                    // Check if there's a corresponding order
+                                    const relatedOrder = ordersMap[submission._id.toString()];
+                                    let statusBadge = '';
+                                    
+                                    if (relatedOrder) {
+                                        if (relatedOrder.paymentStatus === 'paid') {
+                                            statusBadge = '<span class="badge bg-success">Paid</span>';
+                                        } else if (relatedOrder.paymentStatus === 'pending') {
+                                            statusBadge = '<span class="badge bg-warning text-dark">Pending</span>';
+                                        } else {
+                                            statusBadge = '<span class="badge bg-secondary">Processing</span>';
+                                        }
+                                    } else {
+                                        statusBadge = '<span class="badge bg-info">New</span>';
+                                    }
+                                    %>
+                                    <%- statusBadge %>
+                                </td>
+                                <td class="action-col">
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <a class="detail-button" data-bs-toggle="modal" data-bs-target="#detailModal<%= submission.id %>">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
                                         <% if (submission.imagePath) { %>
-                                            <img src="<%= submission.imagePath %>" alt="Product" class="submission-image" data-bs-toggle="modal" data-bs-target="#imageModal<%= submission.id %>">
-                                        <% } else { %>
-                                            <div class="text-muted text-center"><i class="bi bi-image"></i></div>
-                                        <% } %>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <a class="detail-button" data-bs-toggle="modal" data-bs-target="#detailModal<%= submission.id %>">
-                                                <i class="bi bi-eye"> View</i>
+                                            <a class="detail-button" data-bs-toggle="modal" data-bs-target="#imageModal<%= submission.id %>">
+                                                <i class="bi bi-image"></i>
                                             </a>
-                                            
-                                        </div>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
+                                        <% } %>
+                                        
+                                        <% 
+                                        // Add receipt button if available
+                                        if (relatedOrder && relatedOrder.paymentStatus === 'paid') { 
+                                            const documentUrl = relatedOrder.receiptUrl || relatedOrder.invoiceUrl;
+                                            if (documentUrl) {
+                                        %>
+                                            <a href="<%= documentUrl %>" target="_blank" class="receipt-button">
+                                                <i class="bi bi-file-earmark-pdf"></i>
+                                            </a>
+                                        <% } } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
             
             <!-- Pagination -->
             <div class="pagination-container">
                 <nav>
-                    <ul class="pagination">
-                        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    <ul class="pagination" id="tablePagination">
+                        <li class="page-item disabled"><a class="page-link" href="#" data-page="prev">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#" data-page="1">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#" data-page="next">Next</a></li>
                     </ul>
                 </nav>
             </div>
+        </div>
             
-            <!-- Detail Modals -->
-            <% submissions.forEach(function(submission) { %>
-                <div class="modal fade" id="detailModal<%= submission.id %>" tabindex="-1" aria-labelledby="detailModalLabel<%= submission.id %>" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="detailModalLabel<%= submission.id %>">
-                                    <% if (submission.action === 'buy') { %>
-                                        <span class="badge-buy me-2">BUY</span>
-                                    <% } else if (submission.action === 'sell') { %>
-                                        <span class="badge-sell me-2">SELL</span>
-                                    <% } else if (submission.action === 'invest') { %>
-                                        <span class="badge-invest me-2">INVEST</span>
-                                    <% } else { %>
-                                        <span class="badge-none me-2">OTHER</span>
-                                    <% } %>
-                                    Transaction #<%= submission.id.toString().slice(-6) %>
-                                </h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <!-- Detail Modals -->
+        <% submissions.forEach(function(submission) { %>
+            <div class="modal fade" id="detailModal<%= submission.id %>" tabindex="-1" aria-labelledby="detailModalLabel<%= submission.id %>" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailModalLabel<%= submission.id %>">
+                                <% if (submission.action === 'buy') { %>
+                                    <span class="badge-buy me-2">BUY</span>
+                                <% } else if (submission.action === 'sell') { %>
+                                    <span class="badge-sell me-2">SELL</span>
+                                <% } else if (submission.action === 'invest') { %>
+                                    <span class="badge-invest me-2">INVEST</span>
+                                <% } else { %>
+                                    <span class="badge-none me-2">OTHER</span>
+                                <% } %>
+                                Transaction #<%= String(submission.id).substring(0, 8) %>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="customer-card">
+                                        <h5 class="mb-3"><i class="bi bi-person me-2"></i>Customer Information</h5>
+                                        <p class="mb-1"><strong>Name:</strong> <%= submission.name %></p>
+                                        <p class="mb-1"><strong>Email:</strong> <%= submission.email %></p>
+                                        <% if (submission.phone) { %>
+                                            <p class="mb-1"><strong>Phone:</strong> <%= submission.phone %></p>
+                                        <% } %>
+                                        <p class="mb-0"><strong>Date:</strong> <%= new Date(submission.timestamp).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="transaction-card">
+                                        <h5 class="mb-3"><i class="bi bi-coin me-2"></i>Transaction Details</h5>
+                                        <p class="mb-1"><strong>ID:</strong> <%= submission.id %></p>
+                                        <p class="mb-1"><strong>Metal:</strong> <%= submission.metal %></p>
+                                        <p class="mb-1"><strong>Weight:</strong> <%= submission.grams %> grams</p>
+                                        <p class="mb-1"><strong>Price:</strong> <%= submission.calculatedPrice %></p>
+                                        <% if (submission.sku) { %>
+                                            <p class="mb-0"><strong>SKU:</strong> <%= submission.sku %></p>
+                                        <% } %>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="modal-body">
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <div class="customer-card">
-                                            <h5 class="card-title"><i class="bi bi-person-circle me-2"></i>Customer Information</h5>
-                                            <hr>
-                                            <div class="mb-3">
-                                                <strong>Name:</strong> <%= submission.name %>
+                            
+                            <% if (submission.description) { %>
+                                <div class="mt-3">
+                                    <h5 class="mb-2"><i class="bi bi-chat-left-text me-2"></i>Notes</h5>
+                                    <div class="p-3 bg-light rounded">
+                                        <%= submission.description %>
+                                    </div>
+                                </div>
+                            <% } %>
+                            
+                            <% 
+                            // Order information if available
+                            const modalOrder = ordersMap[submission._id.toString()];
+                            if (modalOrder) {
+                            %>
+                                <div class="mt-3">
+                                    <h5 class="mb-2"><i class="bi bi-bag-check me-2"></i>Order Information</h5>
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p class="mb-1"><strong>Order #:</strong> <%= modalOrder.orderNumber %></p>
+                                                <p class="mb-1"><strong>Created:</strong> <%= new Date(modalOrder.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                                                <p class="mb-1"><strong>Updated:</strong> <%= new Date(modalOrder.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                                                <p class="mb-1"><strong>Status:</strong> <span class="badge <%= modalOrder.status === 'paid' ? 'bg-success' : modalOrder.status === 'pending' ? 'bg-warning text-dark' : 'bg-secondary' %>"><%= modalOrder.status.charAt(0).toUpperCase() + modalOrder.status.slice(1) %></span></p>
+                                                <p class="mb-1"><strong>Payment:</strong> <span class="badge <%= modalOrder.paymentStatus === 'paid' ? 'bg-success' : modalOrder.paymentStatus === 'pending' ? 'bg-warning text-dark' : modalOrder.paymentStatus === 'failed' ? 'bg-danger' : 'bg-secondary' %>"><%= modalOrder.paymentStatus.charAt(0).toUpperCase() + modalOrder.paymentStatus.slice(1) %></span></p>
                                             </div>
-                                            <div class="mb-3">
-                                                <strong>Email:</strong> <a href="mailto:<%= submission.email %>"><%= submission.email %></a>
-                                            </div>
-                                            <div class="mb-3">
-                                                <strong>Transaction ID:</strong> #<%= submission.id %>
-                                            </div>
-                                            <div>
-                                                <strong>Date:</strong> <%= new Date(submission.timestamp).toLocaleString() %>
+                                            <div class="col-md-6">
+                                                <% if (modalOrder.action === 'buy' && modalOrder.deliveryAddress) { %>
+                                                    <p class="mb-1"><strong>Shipping Address:</strong></p>
+                                                    <address class="mb-2">
+                                                        <%= modalOrder.name %><br>
+                                                        <%= modalOrder.deliveryAddress.street %><br>
+                                                        <%= modalOrder.deliveryAddress.city %>, <%= modalOrder.deliveryAddress.state %> <%= modalOrder.deliveryAddress.zipCode %><br>
+                                                        <%= modalOrder.deliveryAddress.country %>
+                                                    </address>
+                                                <% } %>
+                                                
+                                                <% if (modalOrder.stripeSessionId) { %>
+                                                    <p class="mb-1"><strong>Stripe Session:</strong> <small class="text-muted"><%= modalOrder.stripeSessionId.substring(0, 15) %>...</small></p>
+                                                <% } %>
+                                                
+                                                <% if (modalOrder.stripePaymentIntentId) { %>
+                                                    <p class="mb-0"><strong>Payment Intent:</strong> <small class="text-muted"><%= modalOrder.stripePaymentIntentId.substring(0, 15) %>...</small></p>
+                                                <% } %>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="transaction-card">
-                                            <h5 class="card-title"><i class="bi bi-currency-exchange me-2"></i>Transaction Details</h5>
-                                            <hr>
-                                            <div class="mb-3">
-                                                <strong>Metal:</strong> <%= submission.metal %>
-                                            </div>
-                                            <div class="mb-3">
-                                                <strong>Weight:</strong> <%= submission.grams %> grams
-                                            </div>
-                                            <div class="mb-3">
-                                                <strong>Price:</strong> <%= submission.calculatedPrice %>
-                                            </div>
-                                            <% if (submission.sku) { %>
-                                                <div class="mb-3">
-                                                    <strong>SKU:</strong> <%= submission.sku %>
+                                </div>
+                                
+                                <% if (modalOrder.invoiceUrl || modalOrder.receiptUrl) { %>
+                                <div class="mt-3">
+                                    <h5 class="mb-2"><i class="bi bi-file-earmark-pdf me-2"></i>Documents</h5>
+                                    <div class="p-3 bg-light rounded">
+                                        <div class="row">
+                                            <% if (modalOrder.invoiceUrl) { %>
+                                            <div class="col-md-6 mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <i class="bi bi-file-earmark-text text-primary" style="font-size: 2rem;"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong class="d-block">Invoice</strong>
+                                                        <a href="<%= modalOrder.invoiceUrl %>" target="_blank" class="btn btn-sm btn-outline-primary mt-1">
+                                                            <i class="bi bi-eye"></i> View Invoice
+                                                        </a>
+                                                    </div>
                                                 </div>
+                                            </div>
+                                            <% } %>
+                                            
+                                            <% if (modalOrder.receiptUrl) { %>
+                                            <div class="col-md-6 mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <i class="bi bi-receipt text-success" style="font-size: 2rem;"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong class="d-block">Receipt</strong>
+                                                        <a href="<%= modalOrder.receiptUrl %>" target="_blank" class="btn btn-sm btn-outline-success mt-1">
+                                                            <i class="bi bi-eye"></i> View Receipt
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <% } %>
                                         </div>
                                     </div>
                                 </div>
+                                <% } %>
                                 
-                                <% if (submission.description) { %>
-                                    <div class="mt-4">
-                                        <h5><i class="bi bi-chat-left-text me-2"></i>Notes/Description</h5>
-                                        <hr>
-                                        <div class="p-3 bg-light rounded">
-                                            <%= submission.description %>
+                                <% if (modalOrder.notes) { %>
+                                <div class="mt-3">
+                                    <h5 class="mb-2"><i class="bi bi-sticky me-2"></i>Order Notes</h5>
+                                    <div class="p-3 bg-light rounded">
+                                        <%= modalOrder.notes %>
+                                    </div>
+                                </div>
+                                <% } %>
+                            <% } %>
+                            
+                            <% if (submission.imagePath) { %>
+                                <div class="mt-3">
+                                    <h5 class="mb-2"><i class="bi bi-image me-2"></i>Image</h5>
+                                    <div class="image-container p-2 border rounded bg-white text-center position-relative">
+                                        <div class="image-overlay position-absolute top-0 end-0 p-2 opacity-75">
+                                            <button class="btn btn-sm btn-light" title="Click to enlarge" onclick="openImageModal('<%= submission.id %>')">
+                                                <i class="bi bi-arrows-fullscreen"></i>
+                                            </button>
+                                        </div>
+                                        <img src="<%= submission.imagePath %>" alt="Uploaded image" class="modal-detail-image img-fluid clickable-image" data-id="<%= submission.id %>" style="max-height: 250px; cursor: zoom-in;">
+                                        <div class="image-caption mt-2 text-muted small">
+                                            Click on image to view in full size
                                         </div>
                                     </div>
-                                <% } %>
-                                
-                                <% if (submission.imagePath) { %>
-                                    <div class="mt-4 text-center">
-                                        <h5><i class="bi bi-image me-2"></i>Image</h5>
-                                        <hr>
-                                        <img src="<%= submission.imagePath %>" alt="Uploaded image" class="modal-detail-image img-fluid">
-                                    </div>
-                                <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="modal-footer">
+                            <% 
+                            // Check if there's a corresponding order for this submission
+                            if (modalOrder && modalOrder.paymentStatus === 'paid') { 
+                                const modalDocUrl = modalOrder.receiptUrl || modalOrder.invoiceUrl;
+                                if (modalDocUrl) {
+                            %>
+                                <a href="<%= modalDocUrl %>" target="_blank" class="btn btn-success">
+                                    <i class="bi bi-file-earmark-pdf"></i> View Receipt
+                                </a>
+                            <% } } %>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <% if (submission.imagePath) { %>
+                <!-- Image Modal -->
+                <div class="modal fade" id="imageModal<%= submission.id %>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-image me-2 text-primary"></i>
+                                    Image for #<%= String(submission.id).substring(0, 8) %>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <div class="modal-body text-center p-0">
+                                <div class="position-relative">
+                                    <img src="<%= submission.imagePath %>" alt="Full size image" class="img-fluid" id="fullImage<%= submission.id %>" style="max-height: 75vh;">
+                                    <div class="position-absolute top-0 end-0 p-3">
+                                        <a href="<%= submission.imagePath %>" class="btn btn-sm btn-light" download="spectra_image_<%= submission.id %>.jpg" target="_blank">
+                                            <i class="bi bi-download"></i> Download
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer justify-content-between">
+                                <div class="image-info">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        <%= submission.metal %> | <%= submission.grams %>g | 
+                                        <% if (submission.action === 'buy') { %>
+                                            <span class="badge-buy">BUY</span>
+                                        <% } else if (submission.action === 'sell') { %>
+                                            <span class="badge-sell">SELL</span>
+                                        <% } else if (submission.action === 'invest') { %>
+                                            <span class="badge-invest">INVEST</span>
+                                        <% } %>
+                                    </small>
+                                </div>
+                                <div class="image-controls">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="rotateImage('fullImage<%= submission.id %>', -90)">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-1" onclick="rotateImage('fullImage<%= submission.id %>', 90)">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                
-                <% if (submission.imagePath) { %>
-                    <!-- Image Modal -->
-                    <div class="modal fade" id="imageModal<%= submission.id %>" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Image Preview</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <img src="<%= submission.imagePath %>" alt="Full size image" class="img-fluid">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
-            <% }); %>
-            
-        <% } else { %>
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <h3>No Transactions Yet</h3>
-                <p class="text-muted">When customers submit metal transaction requests, they will appear here.</p>
-                <a href="/data" class="btn btn-primary mt-3">Return to Main Page</a>
-            </div>
-        <% } %>
+            <% } %>
+        <% }); %>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar toggle for mobile
-            const sidebar = document.querySelector('.sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
             
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('show');
+            // Make images in detail view clickable to open the full image modal
+            document.querySelectorAll('.modal-detail-image').forEach(img => {
+                img.style.cursor = 'pointer';
+                img.addEventListener('click', function() {
+                    // Find the ID from the parent modal
+                    const modalId = this.closest('.modal').id;
+                    const submissionId = modalId.replace('detailModal', '');
+                    
+                    // Hide the current modal and show the image modal
+                    bootstrap.Modal.getInstance(document.getElementById(modalId)).hide();
+                    const imageModal = new bootstrap.Modal(document.getElementById('imageModal' + submissionId));
+                    imageModal.show();
                 });
-            }
+            });
             
-            // Table filtering
+            // Get filter elements
             const searchInput = document.getElementById('searchInput');
             const filterAction = document.getElementById('filterAction');
             const filterMetal = document.getElementById('filterMetal');
             const resetFilters = document.getElementById('resetFilters');
-            const rows = document.querySelectorAll('.transaction-row');
             
+            // Get all rows
+            const rows = document.querySelectorAll('.submission-row');
+            
+            // Pagination
+            const ITEMS_PER_PAGE = 10;
+            let currentPage = 1;
+            
+            // Apply filters
             function applyFilters() {
-                const searchTerm = searchInput.value.toLowerCase();
-                const actionFilter = filterAction.value.toLowerCase();
-                const metalFilter = filterMetal.value;
+                const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+                const actionFilter = filterAction ? filterAction.value.toLowerCase() : '';
+                const metalFilter = filterMetal ? filterMetal.value : '';
+                
+                let visibleRows = 0;
                 
                 rows.forEach(row => {
-                    const id = row.getAttribute('data-id');
+                    const id = row.getAttribute('data-id').toLowerCase();
+                    const action = row.getAttribute('data-action').toLowerCase();
                     const metal = row.getAttribute('data-metal');
-                    const action = row.getAttribute('data-action');
-                    const text = row.textContent.toLowerCase();
+                    const name = row.querySelector('td:nth-child(3) div').textContent.toLowerCase();
                     
-                    const matchesSearch = searchTerm === '' || text.includes(searchTerm);
-                    const matchesAction = actionFilter === '' || action === actionFilter;
-                    const matchesMetal = metalFilter === '' || metal === metalFilter;
+                    const matchesSearch = !searchTerm || 
+                        id.includes(searchTerm) || 
+                        name.includes(searchTerm);
+                    
+                    const matchesAction = !actionFilter || action === actionFilter;
+                    
+                    const matchesMetal = !metalFilter || metal === metalFilter;
                     
                     if (matchesSearch && matchesAction && matchesMetal) {
+                        visibleRows++;
+                        row.classList.remove('d-none');
+                    } else {
+                        row.classList.add('d-none');
+                    }
+                });
+                
+                // Update pagination
+                updatePagination(visibleRows);
+                showPage(1);
+            }
+            
+            // Update pagination based on visible rows
+            function updatePagination(visibleCount) {
+                const totalPages = Math.ceil(visibleCount / ITEMS_PER_PAGE);
+                const paginationElement = document.getElementById('tablePagination');
+                
+                // Clear existing page numbers
+                while (paginationElement.childElementCount > 2) {
+                    paginationElement.removeChild(paginationElement.childNodes[1]);
+                }
+                
+                // Add page numbers
+                for (let i = totalPages; i >= 1; i--) {
+                    const li = document.createElement('li');
+                    li.className = i === currentPage ? 'page-item active' : 'page-item';
+                    
+                    const a = document.createElement('a');
+                    a.className = 'page-link';
+                    a.href = '#';
+                    a.setAttribute('data-page', i);
+                    a.textContent = i;
+                    
+                    li.appendChild(a);
+                    paginationElement.insertBefore(li, paginationElement.childNodes[1]);
+                }
+                
+                // Update previous/next buttons
+                const prevButton = paginationElement.querySelector('[data-page="prev"]').parentNode;
+                const nextButton = paginationElement.querySelector('[data-page="next"]').parentNode;
+                
+                prevButton.classList.toggle('disabled', currentPage === 1);
+                nextButton.classList.toggle('disabled', currentPage === totalPages || totalPages === 0);
+            }
+            
+            // Show specific page
+            function showPage(pageNum) {
+                currentPage = pageNum;
+                
+                // Get visible rows (not filtered out)
+                const visibleRows = Array.from(rows).filter(row => !row.classList.contains('d-none'));
+                
+                // Calculate start and end indices
+                const startIndex = (pageNum - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
+                
+                // Show/hide rows based on pagination
+                visibleRows.forEach((row, index) => {
+                    if (index >= startIndex && index < endIndex) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';
                     }
                 });
+                
+                // Update active page link
+                document.querySelectorAll('#tablePagination .page-item').forEach(item => {
+                    const pageLink = item.querySelector('.page-link');
+                    if (pageLink && pageLink.getAttribute('data-page') == pageNum) {
+                        item.classList.add('active');
+                    } else if (pageLink && pageLink.getAttribute('data-page') !== 'prev' && pageLink.getAttribute('data-page') !== 'next') {
+                        item.classList.remove('active');
+                    }
+                });
             }
             
+            // Event listeners
             if (searchInput) searchInput.addEventListener('input', applyFilters);
             if (filterAction) filterAction.addEventListener('change', applyFilters);
             if (filterMetal) filterMetal.addEventListener('change', applyFilters);
@@ -585,7 +828,48 @@
                     applyFilters();
                 });
             }
+            
+            // Pagination click events
+            document.getElementById('tablePagination').addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = e.target.closest('a.page-link');
+                if (!target) return;
+                
+                const pageAction = target.getAttribute('data-page');
+                
+                if (pageAction === 'prev') {
+                    if (currentPage > 1) showPage(currentPage - 1);
+                } else if (pageAction === 'next') {
+                    const totalPages = Math.ceil(document.querySelectorAll('.submission-row:not(.d-none)').length / ITEMS_PER_PAGE);
+                    if (currentPage < totalPages) showPage(currentPage + 1);
+                } else {
+                    showPage(parseInt(pageAction));
+                }
+            });
+            
+            // Initial setup
+            applyFilters();
         });
+        
+        // Function to rotate images
+        function rotateImage(imageId, degrees) {
+            const img = document.getElementById(imageId);
+            const currentRotation = img.style.transform ? 
+                parseInt(img.style.transform.replace(/[^0-9]/g, '')) || 0 : 0;
+                
+            const newRotation = currentRotation + degrees;
+            img.style.transform = `rotate(${newRotation}deg)`;
+        }
+        
+        // Function to open image modal from the details modal
+        function openImageModal(submissionId) {
+            // Hide the current detail modal and show the image modal
+            bootstrap.Modal.getInstance(document.getElementById('detailModal' + submissionId)).hide();
+            setTimeout(() => {
+                const imageModal = new bootstrap.Modal(document.getElementById('imageModal' + submissionId));
+                imageModal.show();
+            }, 150); // Small delay to ensure smooth transition between modals
+        }
     </script>
 </body>
-</html> </html> 
+</html> 

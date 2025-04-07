@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Spectra Metal Transactions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        .success-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .success-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .logo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        
+        .success-icon {
+            font-size: 5rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .success-title {
+            font-size: 2.5rem;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+        
+        .success-message {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        
+        .order-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+            padding: 10px 25px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        
+        .receipt-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #28a745;
+            text-decoration: none;
+        }
+        
+        .receipt-link:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <img src="https://static.wixstatic.com/media/bb6757_4ca9a0b59e614a1b992bbf048bc8d91d~mv2.jpg" alt="Spectra Metals Logo" class="logo">
+            <i class="bi bi-check-circle-fill success-icon"></i>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p class="success-message">Thank you for your purchase. Your order has been confirmed and is now being processed.</p>
+            
+            <div class="order-details">
+                <h3 class="mb-4">Order Details</h3>
+                <div class="detail-row">
+                    <strong>Order Number:</strong>
+                    <span><%= order.orderNumber %></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Date:</strong>
+                    <span><%= new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Product:</strong>
+                    <span><%= order.metal %> (<%= order.grams %> grams)</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Amount Paid:</strong>
+                    <span><%= order.calculatedPrice %></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Payment Status:</strong>
+                    <span class="badge bg-success">Paid</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Shipping To:</strong>
+                    <span>
+                        <%= order.name %><br>
+                        <%= order.deliveryAddress.street %><br>
+                        <%= order.deliveryAddress.city %>, <%= order.deliveryAddress.state %> <%= order.deliveryAddress.zipCode %><br>
+                        <%= order.deliveryAddress.country %>
+                    </span>
+                </div>
+            </div>
+            
+            <p>A confirmation email has been sent to <strong><%= order.email %></strong> with your receipt details.</p>
+            
+            <% if (order.receiptUrl || order.invoiceUrl) { %>
+                <a href="<%= order.receiptUrl || order.invoiceUrl %>" target="_blank" class="receipt-link">
+                    <i class="bi bi-file-earmark-pdf"></i> View Receipt
+                </a>
+            <% } %>
+            
+            <div class="mt-4">
+                <a href="/" class="btn btn-primary">Return to Home Page</a>
+            </div>
+            
+            <div class="footer">
+                <p>&copy; <%= new Date().getFullYear() %> Spectra Metal Transactions. All rights reserved.</p>
+                <p>123 Metal Street, New York, NY 10001</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

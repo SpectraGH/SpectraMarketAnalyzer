@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Confirmation - Spectra Metal Transactions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        .sell-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .sell-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .sell-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .sell-title {
+            font-size: 2.5rem;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+        
+        .sell-message {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        
+        .shipping-address {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 2px dashed #dc3545;
+        }
+        
+        .shipping-address .title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #dc3545;
+        }
+        
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            padding: 10px 25px;
+            font-weight: 500;
+            margin: 10px 5px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        
+        .receipt-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        
+        .receipt-link:hover {
+            text-decoration: underline;
+        }
+        
+        .transaction-details {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .copy-btn {
+            background-color: #e9ecef;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .copy-btn:hover {
+            background-color: #dee2e6;
+        }
+        
+        .steps-list {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .steps-list ol {
+            padding-left: 20px;
+        }
+        
+        .steps-list li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sell-container">
+        <div class="sell-card">
+            <i class="bi bi-currency-exchange sell-icon"></i>
+            <h1 class="sell-title">Sell Request Confirmed</h1>
+            <p class="sell-message">Thank you for choosing to sell your metals with us. Your request has been submitted successfully.</p>
+            
+            <div class="transaction-details">
+                <h3 class="mb-4">Transaction Details</h3>
+                <div class="detail-row">
+                    <strong>Reference Number:</strong>
+                    <span id="referenceNumber"><%= order.orderNumber %></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Date:</strong>
+                    <span><%= new Date(order.createdAt).toLocaleDateString() %></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Metal:</strong>
+                    <span><%= order.metal %></span>
+                </div>
+                <div class="detail-row">
+                    <strong>Weight:</strong>
+                    <span><%= order.grams %> grams</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Offered Price:</strong>
+                    <span><%= order.calculatedPrice %></span>
+                </div>
+            </div>
+            
+            <div class="steps-list">
+                <h4>Next Steps:</h4>
+                <ol>
+                    <li>Package your metal securely, including your reference number.</li>
+                    <li>Ship your package to the address below.</li>
+                    <li>Once we receive and verify your metals, we'll process your payment within 3-5 business days.</li>
+                    <li>You'll receive payment confirmation via email.</li>
+                </ol>
+            </div>
+            
+            <div class="shipping-address">
+                <div class="title">SHIP YOUR METALS TO:</div>
+                <p>
+                    Spectra Metal Transactions<br>
+                    123 Metal Street<br>
+                    New York, NY 10001<br>
+                    United States
+                </p>
+                <div class="reference-number mt-3">
+                    <strong>Include your reference number:</strong><br>
+                    <span id="refNumberDisplay"><%= order.orderNumber %></span>
+                    <button class="copy-btn" onclick="copyToClipboard('<%= order.orderNumber %>')">
+                        <i class="bi bi-clipboard"></i> Copy
+                    </button>
+                </div>
+            </div>
+            
+            <p>A confirmation email has been sent to <strong><%= order.email %></strong> with your receipt and shipping details.</p>
+            
+            <% if (order.receiptUrl) { %>
+                <a href="<%= order.receiptUrl %>" target="_blank" class="receipt-link">
+                    <i class="bi bi-file-earmark-pdf"></i> View Receipt
+                </a>
+            <% } %>
+            
+            <div class="mt-4">
+                <a href="/" class="btn btn-primary">Return to Home Page</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                const copyBtn = document.querySelector('.copy-btn');
+                copyBtn.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copy';
+                }, 2000);
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html> 

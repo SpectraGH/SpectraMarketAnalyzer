@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Spectra Metal Transactions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        .error-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .error-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        
+        .error-title {
+            font-size: 2.5rem;
+            color: #212529;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+        
+        .error-detail {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            padding: 10px 25px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <i class="bi bi-exclamation-triangle-fill error-icon"></i>
+            <h1 class="error-title">Error</h1>
+            <p class="error-message"><%= message %></p>
+            
+            <% if (error && error.status) { %>
+                <div class="alert alert-danger">
+                    Error <%= error.status %>
+                </div>
+            <% } %>
+            
+            <% if (error && error.stack && process.env.NODE_ENV === 'development') { %>
+                <div class="error-detail">
+                    <pre><%= error.stack %></pre>
+                </div>
+            <% } %>
+            
+            <div class="mt-4">
+                <p>Please try again or return to the home page.</p>
+                <a href="/" class="btn btn-primary">Return to Home Page</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

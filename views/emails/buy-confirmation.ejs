@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><%= subject %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #28a745;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #e9e9e9;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #e9e9e9;
+            border-top: none;
+        }
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .order-details {
+            background-color: #ffffff;
+            border: 1px solid #e9e9e9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .address-block {
+            margin-top: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e9e9e9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Your Metal Purchase Order</h1>
+    </div>
+    <div class="content">
+        <p>Dear <%= order.name %>,</p>
+        
+        <p>Thank you for your purchase with Spectra Metal Transactions. We have received your order and it's pending payment.</p>
+        
+        <div class="order-details">
+            <h3>Order Details</h3>
+            <div class="detail-row">
+                <strong>Order Number:</strong>
+                <span><%= order.orderNumber %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Date:</strong>
+                <span><%= new Date(order.createdAt).toLocaleDateString() %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Metal:</strong>
+                <span><%= order.metal %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Weight:</strong>
+                <span><%= order.grams %> grams</span>
+            </div>
+            <div class="detail-row">
+                <strong>Total Amount:</strong>
+                <span><%= order.calculatedPrice %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Status:</strong>
+                <span>Pending Payment</span>
+            </div>
+        </div>
+        
+        <% if (order.deliveryAddress) { %>
+            <div class="address-block">
+                <h3>Shipping Address</h3>
+                <p>
+                    <%= order.name %><br>
+                    <%= order.deliveryAddress.street %><br>
+                    <%= order.deliveryAddress.city %>, <%= order.deliveryAddress.state %> <%= order.deliveryAddress.zipCode %><br>
+                    <%= order.deliveryAddress.country %>
+                </p>
+            </div>
+        <% } %>
+        
+        <p>Please complete your payment to finalize your purchase. Your order will be processed once payment is confirmed.</p>
+        
+        <% if (order.paymentLink) { %>
+        <div style="text-align: center;">
+            <a href="<%= order.paymentLink %>" class="button">Complete Payment</a>
+        </div>
+        
+        <p>If the button above doesn't work, you can copy and paste the following URL into your browser:</p>
+        <p style="word-break: break-all; font-size: 12px; background: #f5f5f5; padding: 10px; border-radius: 5px;"><%= order.paymentLink %></p>
+        <% } else { %>
+        <div style="text-align: center; margin: 20px 0; padding: 15px; background-color: #fff3cd; border-radius: 5px; color: #856404;">
+            <p><strong>Payment Link Not Available</strong></p>
+            <p>Please contact customer support at <a href="mailto:support@spectra.com">support@spectra.com</a> for assistance with your payment.</p>
+        </div>
+        <% } %>
+        
+        <% if (order.invoiceUrl) { %>
+            <p>You can view your invoice by clicking the button below:</p>
+            <div style="text-align: center;">
+                <a href="<%= order.invoiceUrl %>" class="button" target="_blank">View Invoice</a>
+            </div>
+        <% } %>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our customer support at support@spectra.com or call us at +1 (555) 123-4567.</p>
+        
+        <p>Thank you for choosing Spectra Metal Transactions!</p>
+        
+        <p>Best Regards,<br>
+        The Spectra Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; <%= new Date().getFullYear() %> Spectra Metal Transactions. All rights reserved.</p>
+        <p>123 Metal Street, New York, NY 10001</p>
+    </div>
+</body>
+</html> 

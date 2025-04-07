@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><%= subject %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #dc3545;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 5px 5px 0 0;
+        }
+        .logo {
+            margin-bottom: 15px;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #e9e9e9;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #e9e9e9;
+            border-top: none;
+        }
+        .order-details {
+            background-color: #ffffff;
+            border: 1px solid #e9e9e9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .shipping-block {
+            margin-top: 20px;
+            background-color: #ffffff;
+            border: 2px dashed #dc3545;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .highlight {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .steps {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 10px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .social-links {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #666;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="https://static.wixstatic.com/media/bb6757_4ca9a0b59e614a1b992bbf048bc8d91d~mv2.jpg" alt="Spectra Metals Logo" width="120">
+        </div>
+        <h1>Your Metal Selling Request</h1>
+    </div>
+    <div class="content">
+        <p>Dear <%= order.name %>,</p>
+        
+        <p>Thank you for choosing to sell your metals with Spectra Metal Transactions. We have received your request and are waiting for your shipment.</p>
+        
+        <div class="order-details">
+            <h3>Transaction Details</h3>
+            <div class="detail-row">
+                <strong>Reference Number:</strong>
+                <span><%= order.orderNumber %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Date:</strong>
+                <span><%= new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Metal:</strong>
+                <span><%= order.metal %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Weight:</strong>
+                <span><%= order.grams %> grams</span>
+            </div>
+            <div class="detail-row">
+                <strong>Offered Price:</strong>
+                <span><%= order.calculatedPrice %></span>
+            </div>
+        </div>
+        
+        <h3>Next Steps</h3>
+        <ol class="steps">
+            <li>Package your metal securely.</li>
+            <li>Include a printed copy of this email or a note with your reference number <span class="highlight"><%= order.orderNumber %></span>.</li>
+            <li>Ship your package to the address below.</li>
+            <li>Once we receive and verify your metals, we'll process your payment within 3-5 business days.</li>
+            <li>You'll receive payment confirmation via email.</li>
+        </ol>
+        
+        <div class="shipping-block">
+            <h3 style="color: #dc3545; text-align: center; margin-top: 0;">SHIPPING ADDRESS</h3>
+            <p style="text-align: center;">
+                Spectra Metal Transactions<br>
+                123 Metal Street<br>
+                New York, NY 10001<br>
+                United States
+            </p>
+            <p style="text-align: center;">
+                <strong>Important:</strong> Please include your reference number <span class="highlight"><%= order.orderNumber %></span> with your shipment.
+            </p>
+        </div>
+        
+        <% if (order.receiptUrl) { %>
+            <p>You can view and download your receipt by clicking the button below:</p>
+            <div style="text-align: center;">
+                <a href="<%= order.receiptUrl %>" class="button" target="_blank">View Receipt</a>
+            </div>
+        <% } %>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our customer support at <a href="mailto:support@spectra.com">support@spectra.com</a> or call us at +1 (555) 123-4567.</p>
+        
+        <p>Thank you for choosing Spectra Metal Transactions!</p>
+        
+        <p>Best Regards,<br>
+        The Spectra Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; <%= new Date().getFullYear() %> Spectra Metal Transactions. All rights reserved.</p>
+        <p>123 Metal Street, New York, NY 10001</p>
+        <div class="social-links">
+            <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a> | <a href="#">LinkedIn</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -185,7 +185,8 @@ textarea.is-invalid {
             </div>
             <div class="col-md-6 mb-3">
                 <label for="image" class="form-label">Upload Image (Optional)</label>
-                <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                <input type="file" id="image" name="image" class="form-control" accept="image/jpeg,image/png,image/gif,image/webp">
+                <small class="text-muted">Accepted formats: JPEG, PNG, GIF, WEBP (Max size: 5MB)</small>
                 <div class="invalid-feedback" id="imageError"></div>
                 <img id="imagePreview" class="image-preview" src="#" alt="Image preview">
             </div>
@@ -391,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Action buttons
     const buyButton = document.getElementById('buyButton');
     const sellButton = document.getElementById('sellButton');
+    const investButton = document.querySelector('.invest-button');
     
     // Thank you modal
     const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
@@ -497,18 +499,25 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Generate and display reference number
-                const refNumber = data.id || `REF-${Date.now().toString().slice(-6)}`;
-                document.getElementById('referenceNumber').textContent = refNumber;
-                
-                // Show thank you modal
-                thankYouModal.show();
-                
-                // Reset form but don't redirect or auto-close
-                form.reset();
-                imagePreview.style.display = 'none';
-                calculatedPrice.textContent = 'Price: $0.00';
-                calculatedPriceHidden.value = '$0.00';
+                // Handle different actions
+                if (action === 'buy') {
+                    // Redirect to checkout page for buy action
+                    window.location.href = `/orders/checkout/${data.id}`;
+                } else if (action === 'sell') {
+                    // For sell action, send to sell confirmation
+                    processSellTransaction(data.id);
+                } else {
+                    // For invest or other actions, show thank you modal
+                    const refNumber = data.id || `REF-${Date.now().toString().slice(-6)}`;
+                    document.getElementById('referenceNumber').textContent = refNumber;
+                    thankYouModal.show();
+                    
+                    // Reset form
+                    form.reset();
+                    imagePreview.style.display = 'none';
+                    calculatedPrice.textContent = 'Price: $0.00';
+                    calculatedPriceHidden.value = '$0.00';
+                }
             } else {
                 // Show error
                 formErrors.style.display = 'block';
@@ -540,6 +549,68 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Process sell transaction
+    function processSellTransaction(submissionId) {
+        // Show loading indicator
+        const loadingSpinner = document.getElementById('loadingScreen');
+        loadingSpinner.textContent = 'Processing your sell request...';
+        loadingSpinner.style.display = 'flex';
+        
+        // Set a timeout to handle potential server issues
+        const timeoutId = setTimeout(function() {
+            loadingSpinner.style.display = 'none';
+            formErrors.style.display = 'block';
+            formErrors.textContent = 'The server is taking too long to respond. Please try again or contact support.';
+            
+            // Re-enable buttons
+            document.querySelectorAll('.action-button').forEach(function(btn) {
+                btn.disabled = false;
+            });
+        }, 30000); // 30-second timeout
+        
+        fetch('/orders/sell-confirmation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ submissionId })
+        })
+        .then(function(response) {
+            clearTimeout(timeoutId);
+            return response.json();
+        })
+        .then(function(data) {
+            loadingSpinner.style.display = 'none';
+            
+            if (data.success) {
+                // Redirect to the sell confirmation page
+                window.location.href = `/orders/sell-confirmation/${data.orderNumber}`;
+            } else {
+                // Show error
+                formErrors.style.display = 'block';
+                formErrors.textContent = data.message || 'An error occurred processing your sell request. Please try again.';
+                
+                // Re-enable buttons
+                document.querySelectorAll('.action-button').forEach(function(btn) {
+                    btn.disabled = false;
+                });
+            }
+        })
+        .catch(function(error) {
+            clearTimeout(timeoutId);
+            loadingSpinner.style.display = 'none';
+            
+            console.error('Error processing sell transaction:', error);
+            formErrors.style.display = 'block';
+            formErrors.textContent = 'Network error. Please check your connection and try again.';
+            
+            // Re-enable buttons
+            document.querySelectorAll('.action-button').forEach(function(btn) {
+                btn.disabled = false;
+            });
+        });
+    }
+    
     // Action button event listeners
     buyButton.addEventListener('click', function() {
         handleSubmit('buy', this);
@@ -550,7 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Update the invest button listener too
-    document.querySelector('.invest-button').addEventListener('click', function() {
+    investButton.addEventListener('click', function() {
         handleSubmit('invest', this);
     });
     

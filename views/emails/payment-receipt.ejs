@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title><%= subject %></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #28a745;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border-radius: 5px 5px 0 0;
+        }
+        .logo {
+            margin-bottom: 15px;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #e9e9e9;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #e9e9e9;
+            border-top: none;
+        }
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .order-details {
+            background-color: #ffffff;
+            border: 1px solid #e9e9e9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .address-block {
+            margin-top: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e9e9e9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .tracking-info {
+            background-color: #f8f9fa;
+            border: 1px solid #e9e9e9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .social-links {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #666;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="https://static.wixstatic.com/media/bb6757_4ca9a0b59e614a1b992bbf048bc8d91d~mv2.jpg" alt="Spectra Metals Logo" width="120">
+        </div>
+        <h1>Payment Receipt</h1>
+    </div>
+    <div class="content">
+        <div class="success-message">
+            <h2 style="margin-top: 0;">Payment Successful!</h2>
+            <p>Your payment has been processed successfully.</p>
+        </div>
+        
+        <p>Dear <%= order.name %>,</p>
+        
+        <p>Thank you for your payment. We're pleased to confirm that your payment for order #<%= order.orderNumber %> has been successfully processed.</p>
+        
+        <div class="order-details">
+            <h3>Payment Details</h3>
+            <div class="detail-row">
+                <strong>Order Number:</strong>
+                <span><%= order.orderNumber %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Payment Date:</strong>
+                <span><%= new Date(order.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Payment Method:</strong>
+                <span>Credit Card (Stripe)</span>
+            </div>
+            <div class="detail-row">
+                <strong>Amount Paid:</strong>
+                <span><%= order.calculatedPrice %></span>
+            </div>
+        </div>
+        
+        <div class="order-details">
+            <h3>Order Details</h3>
+            <div class="detail-row">
+                <strong>Date Ordered:</strong>
+                <span><%= new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Metal:</strong>
+                <span><%= order.metal %></span>
+            </div>
+            <div class="detail-row">
+                <strong>Weight:</strong>
+                <span><%= order.grams %> grams</span>
+            </div>
+            <div class="detail-row">
+                <strong>Status:</strong>
+                <span><%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></span>
+            </div>
+        </div>
+        
+        <% if (order.deliveryAddress) { %>
+            <div class="address-block">
+                <h3>Shipping Address</h3>
+                <p>
+                    <%= order.name %><br>
+                    <%= order.deliveryAddress.street %><br>
+                    <%= order.deliveryAddress.city %>, <%= order.deliveryAddress.state %> <%= order.deliveryAddress.zipCode %><br>
+                    <%= order.deliveryAddress.country %>
+                </p>
+            </div>
+            
+            <div class="tracking-info">
+                <p>Your order is now being processed. Once your order ships, you will receive another email with tracking information.</p>
+            </div>
+        <% } %>
+        
+        <% if (order.receiptUrl || order.invoiceUrl) { %>
+            <p>You can download a copy of your receipt by clicking the button below:</p>
+            <div style="text-align: center;">
+                <a href="<%= order.receiptUrl || order.invoiceUrl %>" class="button" target="_blank">View Receipt</a>
+            </div>
+        <% } %>
+        
+        <p>If you have any questions or need assistance with your order, please don't hesitate to contact our customer support at <a href="mailto:support@spectra.com">support@spectra.com</a> or call us at +1 (555) 123-4567.</p>
+        
+        <p>Thank you for your business!</p>
+        
+        <p>Best Regards,<br>
+        The Spectra Team</p>
+    </div>
+    <div class="footer">
+        <p>&copy; <%= new Date().getFullYear() %> Spectra Metal Transactions. All rights reserved.</p>
+        <p>123 Metal Street, New York, NY 10001</p>
+        <div class="social-links">
+            <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a> | <a href="#">LinkedIn</a>
+        </div>
+    </div>
+</body>
+</html> 

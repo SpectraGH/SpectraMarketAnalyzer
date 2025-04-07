@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Spectra Metal Transactions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 40px;
+            padding-bottom: 40px;
+        }
+        
+        .payment-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .payment-container {
+                flex-direction: row;
+            }
+        }
+        
+        .payment-details {
+            flex: 1;
+        }
+        
+        .order-summary {
+            flex: 1;
+        }
+        
+        .card-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        
+        .order-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        
+        .form-control {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #e9ecef;
+            margin: 20px 0;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .payment-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .payment-button:hover {
+            background-color: #218838;
+        }
+        
+        .payment-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        #card-element {
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        
+        #card-errors {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo img {
+            max-width: 150px;
+        }
+        
+        .payment-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 20px;
+        }
+        
+        .payment-steps {
+            display: flex;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            padding: 0 10px;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+        }
+        
+        .step.active .step-number {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .step-title {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .step.active .step-title {
+            color: #212529;
+            font-weight: 600;
+        }
+        
+        .step-line {
+            position: absolute;
+            top: 15px;
+            width: 100%;
+            right: 50%;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: -1;
+        }
+        
+        .payment-methods {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .payment-method {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            width: 80px;
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        
+        .payment-method.active {
+            border-color: #28a745;
+            opacity: 1;
+        }
+        
+        .payment-method img {
+            max-width: 100%;
+            height: 30px;
+            object-fit: contain;
+        }
+        
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .loading:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            animation: spinner .6s linear infinite;
+        }
+        
+        @keyframes spinner {
+            to {transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="https://static.wixstatic.com/media/bb6757_4ca9a0b59e614a1b992bbf048bc8d91d~mv2.jpg" alt="Spectra Metals Logo">
+    </div>
+    
+    <div class="container">
+        <div class="payment-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">Shipping</div>
+            </div>
+            <div class="step active">
+                <div class="step-line"></div>
+                <div class="step-number">2</div>
+                <div class="step-title">Payment</div>
+            </div>
+            <div class="step">
+                <div class="step-line"></div>
+                <div class="step-number">3</div>
+                <div class="step-title">Confirmation</div>
+            </div>
+        </div>
+        
+        <div class="payment-container">
+            <div class="payment-details card-container">
+                <h2 class="order-title">Payment Information</h2>
+                
+                <div class="payment-methods">
+                    <div class="payment-method active">
+                        <img src="https://www.svgrepo.com/show/328132/visa.svg" alt="Visa">
+                    </div>
+                    <div class="payment-method">
+                        <img src="https://www.svgrepo.com/show/328121/mastercard.svg" alt="Mastercard">
+                    </div>
+                    <div class="payment-method">
+                        <img src="https://www.svgrepo.com/show/328127/amex.svg" alt="American Express">
+                    </div>
+                    <div class="payment-method">
+                        <img src="https://www.svgrepo.com/show/328146/discover.svg" alt="Discover">
+                    </div>
+                </div>
+                
+                <form id="payment-form">
+                    <div class="mb-3">
+                        <label for="cardholder-name" class="form-label">Cardholder Name</label>
+                        <input type="text" class="form-control" id="cardholder-name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="card-element" class="form-label">Credit or Debit Card</label>
+                        <div id="card-element"></div>
+                        <div id="card-errors" role="alert"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email for Receipt</label>
+                        <input type="email" class="form-control" id="email" value="<%= order.email %>" readonly>
+                    </div>
+                    
+                    <button type="submit" id="submit-button" class="payment-button">
+                        Pay <%= order.calculatedPrice %>
+                    </button>
+                    
+                    <div class="payment-info">
+                        <p>Your payment information is secure. We use industry-standard encryption to protect your data.</p>
+                        <p>You'll receive a receipt via email once your payment is processed.</p>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="order-summary card-container">
+                <h2 class="order-title">Order Summary</h2>
+                
+                <div class="price-row">
+                    <span>Order Number</span>
+                    <span><%= order.orderNumber %></span>
+                </div>
+                
+                <div class="price-row">
+                    <span>Date</span>
+                    <span><%= new Date(order.createdAt).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) %></span>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="price-row">
+                    <span><%= order.metal %> (<%= order.grams %> grams)</span>
+                    <span><%= order.calculatedPrice %></span>
+                </div>
+                
+                <div class="price-row">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                </div>
+                
+                <div class="total-row">
+                    <span>Total</span>
+                    <span><%= order.calculatedPrice %></span>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <h5>Shipping Address</h5>
+                <p>
+                    <%= order.name %><br>
+                    <%= order.deliveryAddress.street %><br>
+                    <%= order.deliveryAddress.city %>, <%= order.deliveryAddress.state %> <%= order.deliveryAddress.zipCode %><br>
+                    <%= order.deliveryAddress.country %>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Stripe
+            const stripe = Stripe('<%= stripePublicKey %>');
+            const elements = stripe.elements();
+            
+            // Create card Element and mount it
+            const cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#495057',
+                        fontFamily: 'Arial, sans-serif',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                    invalid: {
+                        color: '#dc3545',
+                        iconColor: '#dc3545',
+                    },
+                },
+            });
+            
+            cardElement.mount('#card-element');
+            
+            // Handle form submission
+            const form = document.getElementById('payment-form');
+            const submitButton = document.getElementById('submit-button');
+            const cardholderName = document.getElementById('cardholder-name');
+            
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                
+                // Disable the submit button to prevent multiple clicks
+                submitButton.disabled = true;
+                submitButton.classList.add('loading');
+                
+                const { paymentMethod, error } = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: cardElement,
+                    billing_details: {
+                        name: cardholderName.value,
+                        email: document.getElementById('email').value
+                    },
+                });
+                
+                if (error) {
+                    // Show error to customer
+                    const errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = error.message;
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('loading');
+                } else {
+                    // Send paymentMethod.id to server
+                    const result = await fetch('/orders/process-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            payment_method_id: paymentMethod.id,
+                            order_id: '<%= order._id %>',
+                            order_number: '<%= order.orderNumber %>'
+                        })
+                    }).then(r => r.json());
+                    
+                    if (result.error) {
+                        // Show error to customer
+                        const errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                        submitButton.disabled = false;
+                        submitButton.classList.remove('loading');
+                    } else if (result.already_paid) {
+                        // Order is already paid, redirect to payment success page
+                        window.location.href = '/orders/payment-success/<%= order.orderNumber %>';
+                    } else if (result.requires_action) {
+                        // Use Stripe.js to handle the required card action
+                        const { error, paymentIntent } = await stripe.handleCardAction(
+                            result.payment_intent_client_secret
+                        );
+                        
+                        if (error) {
+                            // Show error to customer
+                            const errorElement = document.getElementById('card-errors');
+                            errorElement.textContent = error.message;
+                            submitButton.disabled = false;
+                            submitButton.classList.remove('loading');
+                        } else {
+                            // The card action has been handled
+                            // The PaymentIntent can be confirmed again on the server
+                            const serverResponse = await fetch('/orders/process-payment', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    payment_intent_id: paymentIntent.id,
+                                    order_id: '<%= order._id %>',
+                                    order_number: '<%= order.orderNumber %>'
+                                })
+                            }).then(r => r.json());
+                            
+                            if (serverResponse.already_paid) {
+                                // Order is already paid, redirect to payment success page
+                                window.location.href = '/orders/payment-success/<%= order.orderNumber %>';
+                            } else if (serverResponse.success) {
+                                // Show success message, redirect to payment success page
+                                window.location.href = '/orders/payment-success/<%= order.orderNumber %>';
+                            } else {
+                                // Show error
+                                const errorElement = document.getElementById('card-errors');
+                                errorElement.textContent = serverResponse.error.message;
+                                submitButton.disabled = false;
+                                submitButton.classList.remove('loading');
+                            }
+                        }
+                    } else {
+                        // Show success message, redirect to payment success page
+                        window.location.href = '/orders/payment-success/<%= order.orderNumber %>';
+                    }
+                }
+            });
+            
+            // Handle payment method selection (visual only in this demo)
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', () => {
+                    // Remove active class from all methods
+                    paymentMethods.forEach(m => m.classList.remove('active'));
+                    // Add active class to the clicked method
+                    method.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
