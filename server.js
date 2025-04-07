@@ -287,12 +287,29 @@ const isAuthenticated = (req, res, next) => {
 
 // Admin login page
 app.get('/admin/login', (req, res) => {
+    // If already authenticated, redirect to dashboard
+    if (req.session && req.session.isAuthenticated) {
+        return res.redirect('/admin/dashboard');
+    }
     res.render('admin-login', { error: null });
 });
 
-// Admin login POST endpoint - updated to handle JSON requests
-app.post('/admin/login', express.json(), (req, res) => {
-    const { username, password, rememberMe } = req.body;
+// Admin login POST endpoint
+app.post('/admin/login', (req, res) => {
+    const isJsonRequest = req.headers['content-type'] && req.headers['content-type'].includes('application/json');
+    
+    // Get username and password from either JSON body or form data
+    let username, password, rememberMe;
+    
+    if (isJsonRequest) {
+        // For JSON requests, parse the body
+        ({ username, password, rememberMe } = req.body);
+    } else {
+        // For form submissions
+        username = req.body.username;
+        password = req.body.password;
+        rememberMe = req.body['remember-me'] === 'on';
+    }
     
     // Get credentials from environment variables or use defaults for development
     const adminUsername = process.env.ADMIN_USERNAME || 'admin';
@@ -304,8 +321,7 @@ app.post('/admin/login', express.json(), (req, res) => {
         
         // Store remember me preference in session
         if (rememberMe) {
-            req.session.rememberMe = true;
-            // Set a longer session expiration if rememberMe is true
+            // Set a longer session expiration for "remember me"
             req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days
         }
         
@@ -313,15 +329,15 @@ app.post('/admin/login', express.json(), (req, res) => {
         const redirectUrl = req.session.returnTo || '/admin/dashboard';
         delete req.session.returnTo;
         
-        // Handle both form and API requests
-        if (req.headers['content-type'] === 'application/json') {
+        // Handle API requests
+        if (isJsonRequest) {
             res.json({ success: true, redirect: redirectUrl });
         } else {
             res.redirect(redirectUrl);
         }
     } else {
-        // Handle both form and API requests
-        if (req.headers['content-type'] === 'application/json') {
+        // Handle invalid credentials
+        if (isJsonRequest) {
             res.status(401).json({ error: 'Invalid username or password' });
         } else {
             res.render('admin-login', { error: 'Invalid username or password' });
@@ -329,46 +345,25 @@ app.post('/admin/login', express.json(), (req, res) => {
     }
 });
 
-// Verify authentication token endpoint
+// Verify authentication token endpoint (simplified)
 app.post('/admin/verify-token', express.json(), (req, res) => {
-    const { token } = req.body;
-    
-    // Check if we have a valid session already
+    // Simply check if the user has a valid session
     if (req.session && req.session.isAuthenticated) {
         return res.json({ valid: true });
     }
     
-    // Check if token exists but session expired (potential reconnect case)
-    if (token) {
-        // Restore session from token 
-        // This is a simplified check; in a production app you would verify the token properly
-        req.session.isAuthenticated = true;
-        req.session.authToken = token;
-        return res.json({ valid: true });
-    }
-    
-    // No valid authentication
+    // If no valid session, send back invalid response
     res.json({ valid: false });
 });
 
-// Check session validity endpoint
+// Check session validity endpoint (simplified)
 app.get('/admin/check-session', (req, res) => {
-    // Check for valid session
+    // Simply check if the user has a valid session
     if (req.session && req.session.isAuthenticated) {
         return res.json({ valid: true });
     }
     
-    // Check for auth cookie
-    const authCookie = req.cookies ? req.cookies.spectra_admin_auth : null;
-    
-    if (authCookie) {
-        // Cookie exists but session expired - restore session
-        req.session.isAuthenticated = true;
-        req.session.authToken = authCookie;
-        return res.json({ valid: true });
-    }
-    
-    // No valid authentication
+    // If no valid session, send back invalid response
     res.json({ valid: false });
 });
 
@@ -376,9 +371,6 @@ app.get('/admin/check-session', (req, res) => {
 app.get('/admin/logout', (req, res) => {
     // Destroy session
     req.session.destroy();
-    
-    // Clear auth cookie
-    res.clearCookie('spectra_admin_auth', { path: '/' });
     
     // Redirect to login page
     res.redirect('/admin/login');
