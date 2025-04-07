@@ -199,6 +199,10 @@
                 const password = document.getElementById('password').value;
                 const rememberMe = document.getElementById('remember-me').checked;
                 
+                // Show loading indicator during login
+                loadingIndicator.classList.remove('d-none');
+                loginForm.classList.add('d-none');
+                
                 fetch('/admin/login', {
                     method: 'POST',
                     headers: {
@@ -217,6 +221,7 @@
                             localStorage.setItem('spectra_admin_auth', 'authenticated_' + Date.now());
                         }
                         window.location.href = response.url;
+                        return null; // Return null to prevent further processing
                     } else {
                         return response.json();
                     }
@@ -234,10 +239,35 @@
                         } else {
                             loginForm.insertBefore(alertDiv, loginForm.firstChild);
                         }
+                        
+                        // Show form again after error
+                        loadingIndicator.classList.add('d-none');
+                        loginForm.classList.remove('d-none');
+                    } else if (data && data.success) {
+                        // Handle successful login via API response
+                        if (rememberMe) {
+                            localStorage.setItem('spectra_admin_auth', 'authenticated_' + Date.now());
+                        }
+                        window.location.href = data.redirect || '/admin/dashboard';
                     }
                 })
                 .catch(error => {
                     console.error('Login error:', error);
+                    // Show form again after error
+                    loadingIndicator.classList.add('d-none');
+                    loginForm.classList.remove('d-none');
+                    
+                    // Display generic error
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger';
+                    alertDiv.innerHTML = `<i class="bi bi-exclamation-triangle-fill me-2"></i> Login failed. Please try again.`;
+                    
+                    const existingAlert = document.querySelector('.alert');
+                    if (existingAlert) {
+                        existingAlert.replaceWith(alertDiv);
+                    } else {
+                        loginForm.insertBefore(alertDiv, loginForm.firstChild);
+                    }
                 });
             });
         });
