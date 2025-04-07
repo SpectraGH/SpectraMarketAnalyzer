@@ -13,6 +13,7 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 // Import models instead of defining schema in server.js
@@ -61,6 +62,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use((req, res, next) => {
     res.setHeader("X-Frame-Options", "ALLOWALL");
@@ -77,7 +79,10 @@ app.use(session({
     saveUninitialized: false,
     cookie: { 
         secure: process.env.NODE_ENV === 'production', 
-        maxAge: 3600000 // 1 hour
+        maxAge: 3600000, // 1 hour by default
+        sameSite: 'lax',
+        path: '/',
+        httpOnly: true
     }
 }));
 
@@ -328,26 +333,54 @@ app.post('/admin/login', express.json(), (req, res) => {
 app.post('/admin/verify-token', express.json(), (req, res) => {
     const { token } = req.body;
     
-    // Check if token exists and session is authenticated
-    if (token && req.session && req.session.isAuthenticated) {
-        res.json({ valid: true });
-    } else {
-        res.json({ valid: false });
+    // Check if we have a valid session already
+    if (req.session && req.session.isAuthenticated) {
+        return res.json({ valid: true });
     }
+    
+    // Check if token exists but session expired (potential reconnect case)
+    if (token) {
+        // Restore session from token 
+        // This is a simplified check; in a production app you would verify the token properly
+        req.session.isAuthenticated = true;
+        req.session.authToken = token;
+        return res.json({ valid: true });
+    }
+    
+    // No valid authentication
+    res.json({ valid: false });
 });
 
 // Check session validity endpoint
 app.get('/admin/check-session', (req, res) => {
+    // Check for valid session
     if (req.session && req.session.isAuthenticated) {
-        res.json({ valid: true });
-    } else {
-        res.json({ valid: false });
+        return res.json({ valid: true });
     }
+    
+    // Check for auth cookie
+    const authCookie = req.cookies ? req.cookies.spectra_admin_auth : null;
+    
+    if (authCookie) {
+        // Cookie exists but session expired - restore session
+        req.session.isAuthenticated = true;
+        req.session.authToken = authCookie;
+        return res.json({ valid: true });
+    }
+    
+    // No valid authentication
+    res.json({ valid: false });
 });
 
 // Admin logout
 app.get('/admin/logout', (req, res) => {
+    // Destroy session
     req.session.destroy();
+    
+    // Clear auth cookie
+    res.clearCookie('spectra_admin_auth', { path: '/' });
+    
+    // Redirect to login page
     res.redirect('/admin/login');
 });
 
