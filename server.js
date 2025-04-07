@@ -85,7 +85,11 @@ app.use(session({
 async function getMetalPrices() { 
     let e; 
     try { 
-        e = await puppeteer.launch({ headless: "new" }); 
+        e = await puppeteer.launch({ 
+            headless: "new", 
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
+            ignoreDefaultArgs: ["--disable-extensions"]
+        }); 
         const t = await e.newPage(); 
         await t.goto("https://www.metalsdaily.com/live-prices/pgms/", { timeout: 6e4 }); 
         return await t.evaluate(() => { 
@@ -100,7 +104,25 @@ async function getMetalPrices() {
             }), e 
         }) 
     } catch (e) { 
-        return console.error("Error scraping metal prices:", e.message), { Gold: 0, Silver: 0, Platinum: 0, Palladium: 0 } 
+        console.error("Error scraping metal prices:", e.message);
+        // Fallback to Yahoo Finance API data
+        try {
+            console.log("Using fallback method for metal prices...");
+            const goldData = await getMetalData("GC=F");
+            const silverData = await getMetalData("SI=F");
+            const platinumData = await getMetalData("PL=F");
+            const palladiumData = await getMetalData("PA=F");
+            
+            return {
+                Gold: goldData.prices.length > 0 ? goldData.prices.slice(-1)[0] / 28 : 0,
+                Silver: silverData.prices.length > 0 ? silverData.prices.slice(-1)[0] / 28 : 0,
+                Platinum: platinumData.prices.length > 0 ? platinumData.prices.slice(-1)[0] / 28 : 0,
+                Palladium: palladiumData.prices.length > 0 ? palladiumData.prices.slice(-1)[0] / 28 : 0
+            };
+        } catch (fallbackError) {
+            console.error("Fallback method also failed:", fallbackError.message);
+            return { Gold: 0, Silver: 0, Platinum: 0, Palladium: 0 }; 
+        }
     } finally { 
         e && await e.close() 
     } 
