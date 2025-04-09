@@ -162,8 +162,8 @@ async function emitRealTimeUpdates() {
 setInterval(emitRealTimeUpdates, 1e4);
 
 // Root route
-app.get("/", (e, t) => { 
-    window.top.location.href = "https://www.spectragemsandminerals.com"
+app.get("/", (req, res) => { 
+    res.redirect("https://www.spectragemsandminerals.com");
 });
 
 // Data route
